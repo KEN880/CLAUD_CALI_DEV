@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { clientsApi, type Client } from '../api/client'
 
 const emptyClient = {
-  country_type: 'KR' as const,
+  country_type: 'KR' as string,
   fio: '',
   inn: '',
   okpo: '',
