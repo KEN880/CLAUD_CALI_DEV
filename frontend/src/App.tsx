@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Routes, Route, NavLink } from 'react-router-dom'
+import { isDemo } from './api/client'
 import ClientsPage from './pages/ClientsPage'
 import ProductsPage from './pages/ProductsPage'
 import CalculatorPage from './pages/CalculatorPage'
@@ -91,6 +92,13 @@ export default function App() {
           </div>
         )}
       </nav>
+
+      {/* Demo banner */}
+      {isDemo && (
+        <div className="bg-gradient-to-r from-[var(--color-rose-400)] to-[var(--color-marina-500)] text-white text-center py-2 px-4 text-xs sm:text-sm font-medium">
+          Демо-режим — данные локальные. Для полного функционала запустите бэкенд на своём устройстве.
+        </div>
+      )}
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-5 sm:py-8">
