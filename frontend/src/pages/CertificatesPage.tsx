@@ -16,20 +16,14 @@ export default function CertificatesPage() {
   const [preview, setPreview] = useState<CalcResult | null>(null)
   const [error, setError] = useState('')
 
-  const load = () => {
-    certificatesApi.list().then(setCertificates)
-    clientsApi.list().then(setClients)
-    productsApi.list().then(setProducts)
-  }
+  const load = () => { certificatesApi.list().then(setCertificates); clientsApi.list().then(setClients); productsApi.list().then(setProducts) }
   useEffect(() => { load() }, [])
 
   const selectedClient = clients.find(c => c.id === clientId)
-
   useEffect(() => {
     if (!selectedClient) return
     calculatorApi.calculate({ country_type: selectedClient.country_type, doc_type: docType, protocol_count: protocolCount, duration_years: durationYears }).then(setPreview)
   }, [clientId, docType, protocolCount, durationYears, selectedClient])
-
   useEffect(() => { if (selectedClient?.country_type === 'RF') setDocType('CC') }, [selectedClient])
   useEffect(() => { if (docType === 'CC') setDurationYears(1) }, [docType])
 
@@ -44,46 +38,43 @@ export default function CertificatesPage() {
     } catch (err: any) { setError(err.message) }
   }
 
-  const selectClass = "w-full px-4 py-2.5 border border-[var(--color-angora-dark)] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-rose-300)] bg-white text-[var(--color-coffee-700)]"
+  const selectClass = "w-full px-3.5 py-2.5 border border-[var(--color-angora-dark)] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-rose-300)] bg-white text-[var(--color-coffee-700)]"
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-8">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6 sm:mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-[var(--color-coffee-800)] tracking-tight">Сертификаты</h1>
-          <p className="text-[var(--color-coffee-500)] mt-1">СС и ДС документы</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-[var(--color-coffee-800)] tracking-tight">Сертификаты</h1>
+          <p className="text-sm text-[var(--color-coffee-500)] mt-1">СС и ДС документы</p>
         </div>
         <button onClick={() => setShowForm(!showForm)}
-          className="bg-gradient-to-r from-[var(--color-rose-400)] to-[var(--color-rose-500)] text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:shadow-lg hover:shadow-[var(--color-rose-200)] transition-all duration-200">
+          className="bg-gradient-to-r from-[var(--color-rose-400)] to-[var(--color-rose-500)] text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:shadow-lg hover:shadow-[var(--color-rose-200)] transition-all duration-200 w-full sm:w-auto">
           {showForm ? 'Закрыть' : '+ Создать'}
         </button>
       </div>
 
       {showForm && (
-        <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-sm border border-[var(--color-angora-dark)] p-8 mb-8 space-y-6">
+        <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-sm border border-[var(--color-angora-dark)] p-5 sm:p-8 mb-6 sm:mb-8 space-y-5">
           <div>
             <label className="block text-sm font-semibold text-[var(--color-coffee-700)] mb-2">Клиент</label>
             <select value={clientId} onChange={e => setClientId(Number(e.target.value))} className={selectClass}>
               <option value={0}>Выберите клиента...</option>
-              {clients.map(c => <option key={c.id} value={c.id}>{c.fio} (ИП {c.country_type === 'KR' ? 'КР' : 'РФ'}) — ИНН {c.inn}</option>)}
+              {clients.map(c => <option key={c.id} value={c.id}>{c.fio} ({c.country_type === 'KR' ? 'КР' : 'РФ'}) — {c.inn}</option>)}
             </select>
           </div>
 
           {selectedClient && (
             <>
-              <div className="flex gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <button type="button" onClick={() => setDocType('CC')}
-                  className={`flex-1 py-3 px-5 rounded-xl border-2 text-sm font-semibold transition-all duration-200 ${
+                  className={`py-3 px-4 rounded-xl border-2 text-sm font-semibold transition-all ${
                     docType === 'CC' ? 'border-[var(--color-marina-500)] bg-[var(--color-marina-50)] text-[var(--color-marina-700)]' : 'border-[var(--color-angora-dark)] text-[var(--color-coffee-600)]'
                   }`}>Сертификат (СС)</button>
                 <button type="button" onClick={() => setDocType('DC')} disabled={selectedClient.country_type === 'RF'}
-                  className={`flex-1 py-3 px-5 rounded-xl border-2 text-sm font-semibold transition-all duration-200 ${
+                  className={`py-3 px-4 rounded-xl border-2 text-sm font-semibold transition-all ${
                     selectedClient.country_type === 'RF' ? 'border-[var(--color-angora)] text-[var(--color-coffee-500)]/40 cursor-not-allowed'
                     : docType === 'DC' ? 'border-[var(--color-lilac-400)] bg-[var(--color-lilac-50)] text-[var(--color-lilac-500)]' : 'border-[var(--color-angora-dark)] text-[var(--color-coffee-600)]'
-                  }`}>
-                  Декларация (ДС)
-                  {selectedClient.country_type === 'RF' && <span className="text-xs text-[var(--color-lava-500)] ml-1">(недоступно)</span>}
-                </button>
+                  }`}>Декларация (ДС){selectedClient.country_type === 'RF' && <span className="text-xs text-[var(--color-lava-500)] block">(недоступно)</span>}</button>
               </div>
 
               <div>
@@ -94,12 +85,11 @@ export default function CertificatesPage() {
                 </select>
               </div>
 
-              <div className="grid grid-cols-2 gap-5">
+              <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-semibold text-[var(--color-coffee-700)] mb-2">Срок</label>
                   <select value={durationYears} onChange={e => setDurationYears(Number(e.target.value))} className={selectClass}>
-                    <option value={1}>1 год</option>
-                    {docType === 'DC' && <option value={3}>3 года</option>}
+                    <option value={1}>1 год</option>{docType === 'DC' && <option value={3}>3 года</option>}
                   </select>
                 </div>
                 <div>
@@ -110,14 +100,13 @@ export default function CertificatesPage() {
 
               <div>
                 <label className="block text-sm font-semibold text-[var(--color-coffee-700)] mb-3">Продукция</label>
-                <div className="max-h-52 overflow-y-auto border border-[var(--color-angora-dark)] rounded-xl p-3 space-y-1">
+                <div className="max-h-48 overflow-y-auto border border-[var(--color-angora-dark)] rounded-xl p-2 space-y-1">
                   {products.map(p => (
-                    <label key={p.id} className="flex items-center gap-3 px-3 py-2 hover:bg-[var(--color-angora)]/50 rounded-lg cursor-pointer transition-colors">
+                    <label key={p.id} className="flex items-center gap-2 px-3 py-2.5 hover:bg-[var(--color-angora)]/50 rounded-lg cursor-pointer">
                       <input type="checkbox" checked={selectedProducts.includes(p.id)} onChange={() => toggleProduct(p.id)}
-                        className="rounded border-[var(--color-angora-dark)] text-[var(--color-rose-500)] focus:ring-[var(--color-rose-300)]" />
-                      <span className="text-sm text-[var(--color-coffee-700)]">{p.article} — {p.name}</span>
-                      <span className="text-xs text-[var(--color-coffee-500)] ml-auto">{p.doc_type === 'CC' ? 'СС' : 'ДС'}</span>
-                      {p.requires_sgr && <span className="text-xs text-[var(--color-melon-600)] font-semibold">СГР</span>}
+                        className="rounded border-[var(--color-angora-dark)] text-[var(--color-rose-500)] focus:ring-[var(--color-rose-300)] shrink-0" />
+                      <span className="text-sm text-[var(--color-coffee-700)] truncate">{p.article} — {p.name}</span>
+                      <span className="text-xs text-[var(--color-coffee-500)] ml-auto shrink-0">{p.doc_type === 'CC' ? 'СС' : 'ДС'}</span>
                     </label>
                   ))}
                   {products.length === 0 && <div className="text-sm text-[var(--color-coffee-500)] text-center py-6">Сначала добавьте продукцию</div>}
@@ -125,9 +114,9 @@ export default function CertificatesPage() {
               </div>
 
               {preview && preview.available && (
-                <div className="bg-gradient-to-br from-[var(--color-sage-50)] to-[var(--color-sage-100)] border border-[var(--color-sage-200)] rounded-xl p-6">
-                  <div className="text-3xl font-bold text-[var(--color-sage-700)]">
-                    {preview.total_price.toLocaleString('ru-RU')} <span className="text-lg font-medium">руб.</span>
+                <div className="bg-gradient-to-br from-[var(--color-sage-50)] to-[var(--color-sage-100)] border border-[var(--color-sage-200)] rounded-xl p-5">
+                  <div className="text-2xl sm:text-3xl font-bold text-[var(--color-sage-700)]">
+                    {preview.total_price.toLocaleString('ru-RU')} <span className="text-base font-medium">руб.</span>
                   </div>
                   <div className="text-sm text-[var(--color-sage-600)] mt-1">
                     Базовая: {preview.base_price.toLocaleString('ru-RU')}
@@ -139,52 +128,38 @@ export default function CertificatesPage() {
           )}
 
           {error && <div className="text-sm text-[var(--color-lava-500)] bg-[var(--color-lava-50)] px-4 py-3 rounded-xl">{error}</div>}
-
           <button type="submit"
-            className="bg-gradient-to-r from-[var(--color-rose-400)] to-[var(--color-rose-500)] text-white px-8 py-2.5 rounded-xl text-sm font-semibold hover:shadow-lg hover:shadow-[var(--color-rose-200)] transition-all duration-200">
-            Создать
-          </button>
+            className="bg-gradient-to-r from-[var(--color-rose-400)] to-[var(--color-rose-500)] text-white px-8 py-2.5 rounded-xl text-sm font-semibold hover:shadow-lg hover:shadow-[var(--color-rose-200)] transition-all duration-200 w-full sm:w-auto">Создать</button>
         </form>
       )}
 
-      {/* List */}
-      <div className="space-y-4">
+      <div className="space-y-3">
         {certificates.map(cert => {
           const client = clients.find(c => c.id === cert.client_id)
           return (
-            <div key={cert.id} className="bg-white rounded-2xl shadow-sm border border-[var(--color-angora-dark)] p-5 hover:shadow-md transition-shadow duration-200">
-              <div className="flex justify-between items-start">
-                <div>
-                  <div className="flex items-center gap-3 mb-2">
-                    <span className={`text-xs px-3 py-1 rounded-full font-semibold ${
-                      cert.doc_type === 'CC' ? 'bg-[var(--color-marina-100)] text-[var(--color-marina-700)]' : 'bg-[var(--color-lilac-100)] text-[var(--color-lilac-500)]'
-                    }`}>{cert.doc_type === 'CC' ? 'СС' : 'ДС'}</span>
+            <div key={cert.id} className="bg-white rounded-2xl shadow-sm border border-[var(--color-angora-dark)] p-4 sm:p-5">
+              <div className="flex flex-col sm:flex-row justify-between gap-3">
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2 mb-1.5 flex-wrap">
+                    <span className={`text-xs px-2.5 py-1 rounded-full font-semibold ${cert.doc_type === 'CC' ? 'bg-[var(--color-marina-100)] text-[var(--color-marina-700)]' : 'bg-[var(--color-lilac-100)] text-[var(--color-lilac-500)]'}`}>{cert.doc_type === 'CC' ? 'СС' : 'ДС'}</span>
                     <span className="text-xs text-[var(--color-coffee-500)]">ТР ТС {cert.tr_ts} | {cert.duration_years} г.</span>
                   </div>
                   <div className="text-sm font-semibold text-[var(--color-coffee-800)]">{client?.fio || `#${cert.client_id}`}</div>
-                  <div className="text-sm text-[var(--color-coffee-500)] mt-1">
-                    ПИ: {cert.protocol_count} | {cert.total_price.toLocaleString('ru-RU')} руб.
-                  </div>
+                  <div className="text-sm text-[var(--color-coffee-500)] mt-1">ПИ: {cert.protocol_count} | {cert.total_price.toLocaleString('ru-RU')} руб.</div>
                   <div className="text-xs text-[var(--color-coffee-500)]/60 mt-1">{new Date(cert.created_at).toLocaleDateString('ru-RU')}</div>
                 </div>
-                <div className="flex gap-3">
+                <div className="flex gap-2 shrink-0">
                   <a href={certificatesApi.downloadUrl(cert.id, 'docx')}
-                    className="text-xs font-semibold text-[var(--color-marina-500)] hover:text-[var(--color-marina-700)] px-3 py-1.5 rounded-lg bg-[var(--color-marina-50)] hover:bg-[var(--color-marina-100)] transition-colors">
-                    DOCX
-                  </a>
+                    className="text-xs font-semibold text-[var(--color-marina-500)] px-3 py-1.5 rounded-lg bg-[var(--color-marina-50)] hover:bg-[var(--color-marina-100)] transition-colors">DOCX</a>
                   <a href={certificatesApi.downloadUrl(cert.id, 'pdf')}
-                    className="text-xs font-semibold text-[var(--color-rose-500)] hover:text-[var(--color-rose-600)] px-3 py-1.5 rounded-lg bg-[var(--color-rose-50)] hover:bg-[var(--color-rose-100)] transition-colors">
-                    PDF
-                  </a>
+                    className="text-xs font-semibold text-[var(--color-rose-500)] px-3 py-1.5 rounded-lg bg-[var(--color-rose-50)] hover:bg-[var(--color-rose-100)] transition-colors">PDF</a>
                 </div>
               </div>
             </div>
           )
         })}
         {certificates.length === 0 && (
-          <div className="text-center text-[var(--color-coffee-500)] py-16 bg-white rounded-2xl border border-[var(--color-angora-dark)]">
-            Нет сертификатов. Создайте первый!
-          </div>
+          <div className="text-center text-[var(--color-coffee-500)] py-12 sm:py-16 bg-white rounded-2xl border border-[var(--color-angora-dark)]">Нет сертификатов. Создайте первый!</div>
         )}
       </div>
     </div>
