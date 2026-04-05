@@ -1,0 +1,90 @@
+@import "tailwindcss";
+
+/* NYFW SS26 Color Palette + Soft Pink Accent */
+@theme {
+  /* Marina — primary blue */
+  --color-marina-50: #f0f5f9;
+  --color-marina-100: #dce8f0;
+  --color-marina-200: #b8d0e1;
+  --color-marina-500: #4b7f9e;
+  --color-marina-600: #3d6a86;
+  --color-marina-700: #2f5469;
+
+  /* Dusty Rose — soft pink accent */
+  --color-rose-50: #fdf2f4;
+  --color-rose-100: #fbe5e9;
+  --color-rose-200: #f5c6ce;
+  --color-rose-300: #e8a0ac;
+  --color-rose-400: #d4788a;
+  --color-rose-500: #c9848a;
+  --color-rose-600: #b05a6b;
+
+  /* Burnished Lilac — secondary accent */
+  --color-lilac-50: #f6f3f7;
+  --color-lilac-100: #ece6f0;
+  --color-lilac-200: #d4c9de;
+  --color-lilac-400: #9b8da6;
+  --color-lilac-500: #7b6f88;
+
+  /* Coffee Bean — dark text */
+  --color-coffee-800: #3c2415;
+  --color-coffee-700: #4a3020;
+  --color-coffee-600: #5c3f2e;
+  --color-coffee-500: #6e5040;
+
+  /* White Onyx & Angora — warm backgrounds */
+  --color-onyx: #faf8f5;
+  --color-angora: #f0ebe3;
+  --color-angora-dark: #e4ddd3;
+
+  /* Sage Green — success */
+  --color-sage-50: #f2f5f0;
+  --color-sage-100: #e0e8db;
+  --color-sage-200: #c3d3b8;
+  --color-sage-500: #8a9a7b;
+  --color-sage-600: #6b7d5e;
+  --color-sage-700: #516345;
+
+  /* Muskmelon — warm orange */
+  --color-melon-50: #fef6f0;
+  --color-melon-100: #fdeadb;
+  --color-melon-200: #f8d0b3;
+  --color-melon-500: #e8985e;
+  --color-melon-600: #d07f42;
+
+  /* Amaranth — purple */
+  --color-amaranth-50: #f7f2f5;
+  --color-amaranth-100: #ede3ea;
+  --color-amaranth-200: #d5c0cf;
+  --color-amaranth-500: #7b4d6e;
+
+  /* Lava Falls — alert red */
+  --color-lava-50: #fdf2f2;
+  --color-lava-100: #fbe5e5;
+  --color-lava-500: #bd3039;
+  --color-lava-600: #9e2530;
+}
+
+:root {
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  background: var(--color-onyx);
+  color: var(--color-coffee-700);
+}
+
+#root {
+  min-height: 100vh;
+}
+
+/* Utility for mono font */
+.font-mono {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+}
