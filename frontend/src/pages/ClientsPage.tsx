@@ -2,7 +2,9 @@ import { useState, useEffect } from 'react'
 import { clientsApi, type Client } from '../api/client'
 
 const emptyClient = {
-  country_type: 'KR' as string,
+  country_type: 'KR' as any,
+  company_type: 'ИП' as any,
+  company_name: '',
   fio: '', inn: '', okpo: '', legal_address: '', workshop_address: '', phone: '', email: '',
 }
 
@@ -23,7 +25,7 @@ export default function ClientsPage() {
   }
 
   const startEdit = (c: Client) => {
-    setForm({ country_type: c.country_type, fio: c.fio, inn: c.inn, okpo: c.okpo || '', legal_address: c.legal_address || '', workshop_address: c.workshop_address || '', phone: c.phone || '', email: c.email || '' })
+    setForm({ country_type: c.country_type as 'KR' | 'RF', company_type: (c.company_type || 'ИП') as 'ИП' | 'ОсОО', company_name: c.company_name || '', fio: c.fio, inn: c.inn, okpo: c.okpo || '', legal_address: c.legal_address || '', workshop_address: c.workshop_address || '', phone: c.phone || '', email: c.email || '' })
     setEditing(c.id); setShowForm(true)
   }
 
@@ -62,9 +64,22 @@ export default function ClientsPage() {
             </div>
           </div>
 
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+            <div>
+              <label className="block text-sm font-medium text-[var(--color-coffee-600)] mb-1.5">Тип организации</label>
+              <select value={form.company_type} onChange={e => setForm({ ...form, company_type: e.target.value })} className={inputClass}>
+                <option value="ИП">ИП</option><option value="ОсОО">ОсОО</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-[var(--color-coffee-600)] mb-1.5">Название</label>
+              <input required value={form.company_name} onChange={e => setForm({ ...form, company_name: e.target.value })} className={inputClass} placeholder="ИП Иванова А.Б." />
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {[
-              { key: 'fio', label: 'ФИО', required: true },
+              { key: 'fio', label: 'ФИО руководителя', required: true },
               { key: 'inn', label: 'ИНН', required: true },
               { key: 'okpo', label: 'ОКПО' },
               { key: 'phone', label: 'Телефон' },
@@ -104,7 +119,7 @@ export default function ClientsPage() {
                   <span className={`text-xs px-2.5 py-1 rounded-full font-semibold shrink-0 ${
                     c.country_type === 'KR' ? 'bg-[var(--color-marina-100)] text-[var(--color-marina-700)]' : 'bg-[var(--color-melon-100)] text-[var(--color-melon-600)]'
                   }`}>ИП {c.country_type === 'KR' ? 'КР' : 'РФ'}</span>
-                  <span className="font-semibold text-[var(--color-coffee-800)] truncate">{c.fio}</span>
+                  <span className="font-semibold text-[var(--color-coffee-800)] truncate">{(c as any).company_name || c.fio}</span>
                 </div>
                 <div className="text-sm text-[var(--color-coffee-500)] break-all">
                   ИНН: {c.inn}{c.okpo && ` | ОКПО: ${c.okpo}`}{c.phone && ` | ${c.phone}`}

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { productsApi, type Product, type Composition } from '../api/client'
 
 const productTypes = ['платье', 'юбка', 'брюки', 'шорты', 'футболка', 'майка', 'топ', 'рубашка', 'блузка', 'жакет', 'костюм', 'свитер', 'кардиган', 'пуловер', 'джемпер', 'водолазка', 'пальто', 'куртка', 'ветровка', 'пуховик', 'комбинезон', 'халат', 'пижама', 'леггинсы', 'боди', 'ползунки']
-const materialTypes = ['трикотаж', 'текстиль']
+const weavingTypes = ['трикотаж', 'швейка']
 const targetGroups = [
   { value: 'adult_female', label: 'Взрослая жен.' },
   { value: 'adult_male', label: 'Взрослая муж.' },
@@ -12,8 +12,9 @@ const ageGroups = ['до 3 лет', '3+']
 const commonMaterials = ['хлопок', 'полиэстер', 'вискоза', 'шерсть', 'лён', 'шёлк', 'нейлон', 'эластан', 'акрил', 'синтетика', 'кашемир', 'бамбук']
 
 const emptyForm = {
-  article: '', name: '', product_type: 'платье', material_type: 'трикотаж',
-  target_group: 'adult_female', age_group: undefined as string | undefined, layer: 1,
+  article: '', name: '', product_type: 'платье', weaving_type: 'трикотаж' as any,
+  target_group: 'adult_female' as any, age_group: undefined as string | undefined, layer: 1 as any,
+  trademark: '',
   compositions: [{ material_name: 'хлопок', percentage: 100 }] as Composition[],
 }
 
@@ -78,8 +79,8 @@ export default function ProductsPage() {
             </div>
             <div>
               <label className="block text-sm font-medium text-[var(--color-coffee-600)] mb-1.5">Тип материала</label>
-              <select value={form.material_type} onChange={e => setForm({ ...form, material_type: e.target.value })} className={inputClass}>
-                {materialTypes.map(t => <option key={t}>{t}</option>)}
+              <select value={form.weaving_type} onChange={e => setForm({ ...form, weaving_type: e.target.value })} className={inputClass}>
+                {weavingTypes.map(t => <option key={t}>{t}</option>)}
               </select>
             </div>
             <div>
@@ -102,6 +103,11 @@ export default function ProductsPage() {
                 </select>
               </div>
             )}
+          </div>
+
+          <div className="mt-4">
+            <label className="block text-sm font-medium text-[var(--color-coffee-600)] mb-1.5">Торговая марка</label>
+            <input value={form.trademark} onChange={e => setForm({ ...form, trademark: e.target.value })} className={inputClass} placeholder="Название бренда (рус/англ)" />
           </div>
 
           <div className="mt-6">
@@ -154,7 +160,7 @@ export default function ProductsPage() {
               </div>
               <button onClick={() => handleDelete(p.id)} className="text-[var(--color-lava-500)] text-xs font-medium shrink-0">Удалить</button>
             </div>
-            <div className="text-xs text-[var(--color-coffee-500)] mb-2">{p.product_type} ({p.material_type})</div>
+            <div className="text-xs text-[var(--color-coffee-500)] mb-2">{p.product_type} ({p.weaving_type})</div>
             <div className="text-xs text-[var(--color-coffee-500)] mb-2">
               {p.compositions.map(c => `${c.material_name} ${c.percentage}%`).join(', ')}
             </div>

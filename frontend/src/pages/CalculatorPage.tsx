@@ -30,8 +30,8 @@ export default function CalculatorPage() {
           <label className="block text-sm font-semibold text-[var(--color-coffee-700)] mb-3">Тип заявителя</label>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {([
-              { value: 'KR', title: 'ИП Кыргызстан', sub: 'СС от 30 000 / ДС от 25 000' },
-              { value: 'RF', title: 'ИП Россия', sub: 'Только СС от 35 000' },
+              { value: 'KR', title: 'ИП Кыргызстан', sub: 'СС 30 000 / ДС 25 000 сом' },
+              { value: 'RF', title: 'ИП Россия', sub: 'Только СС 35 000 сом' },
             ] as const).map(opt => (
               <button
                 key={opt.value}
@@ -91,7 +91,7 @@ export default function CalculatorPage() {
               className="w-11 h-11 rounded-xl border border-[var(--color-angora-dark)] flex items-center justify-center text-lg text-[var(--color-coffee-600)] hover:bg-[var(--color-angora)] transition-colors">+</button>
             {protocolCount > 1 && (
               <span className="text-sm text-[var(--color-melon-600)] font-medium">
-                +{((protocolCount - 1) * 6000).toLocaleString('ru-RU')} за доп. ПИ
+                +{((protocolCount - 1) * 7000).toLocaleString('ru-RU')} за доп. ПИ
               </span>
             )}
           </div>
@@ -127,7 +127,7 @@ export default function CalculatorPage() {
                 <div className="text-sm font-medium text-[var(--color-sage-600)] mb-1">Итого</div>
                 <div className="text-3xl sm:text-5xl font-bold text-[var(--color-sage-700)] tracking-tight">
                   {result.total_price.toLocaleString('ru-RU')}
-                  <span className="text-lg sm:text-2xl font-medium ml-1.5">руб.</span>
+                  <span className="text-lg sm:text-2xl font-medium ml-1.5">сом</span>
                 </div>
                 <div className="mt-3 sm:mt-4 flex flex-col sm:flex-row gap-1 sm:gap-6 text-sm text-[var(--color-sage-600)]">
                   <span>Базовая: {result.base_price.toLocaleString('ru-RU')}</span>

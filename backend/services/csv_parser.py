@@ -9,7 +9,7 @@ def parse_products_file(file_bytes: bytes, filename: str) -> list[dict]:
     - артикул / article
     - наименование / name
     - тип_изделия / product_type
-    - тип_материала / material_type (трикотаж/текстиль)
+    - тип_материала / weaving_type (трикотаж/текстиль)
     - группа / target_group (adult_male, adult_female, child)
     - возраст / age_group (до 3 лет, 3+, или пусто)
     - слой / layer (1, 2, 3)
@@ -26,8 +26,8 @@ def parse_products_file(file_bytes: bytes, filename: str) -> list[dict]:
         "наименование": "name",
         "тип_изделия": "product_type",
         "тип изделия": "product_type",
-        "тип_материала": "material_type",
-        "тип материала": "material_type",
+        "тип_материала": "weaving_type",
+        "тип материала": "weaving_type",
         "группа": "target_group",
         "возраст": "age_group",
         "слой": "layer",
@@ -66,7 +66,7 @@ def parse_products_file(file_bytes: bytes, filename: str) -> list[dict]:
             "article": str(row.get("article", "")).strip(),
             "name": str(row.get("name", "")).strip(),
             "product_type": str(row.get("product_type", "")).strip(),
-            "material_type": str(row.get("material_type", "")).strip(),
+            "weaving_type": str(row.get("weaving_type", "")).strip(),
             "target_group": str(row.get("target_group", "")).strip(),
             "age_group": age,
             "layer": int(row.get("layer", 1)),
