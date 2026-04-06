@@ -4,7 +4,7 @@ from database import get_db
 from models import Product, Composition
 from schemas import ProductCreate, ProductOut
 from services.pricing import determine_doc_type
-from services.tnved_resolver import resolve_tnved
+from services.tnved_resolver import resolve_tnved, determine_layer
 from services.csv_parser import parse_products_file
 
 router = APIRouter(prefix="/api/products", tags=["products"])
@@ -40,7 +40,11 @@ def list_products(db: Session = Depends(get_db)):
 @router.post("/", response_model=ProductOut)
 def create_product(data: ProductCreate, db: Session = Depends(get_db)):
     comps = data.compositions
-    product = Product(**data.model_dump(exclude={"compositions"}))
+    product_data = data.model_dump(exclude={"compositions"})
+    # Auto-determine layer if not explicitly set or 0
+    if product_data.get("layer", 0) == 0:
+        product_data["layer"] = determine_layer(product_data["product_type"])
+    product = Product(**product_data)
     db.add(product)
     db.flush()
     for comp in comps:

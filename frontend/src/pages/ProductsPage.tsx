@@ -11,6 +11,14 @@ const targetGroups = [
 const ageGroups = ['до 3 лет', '3+']
 const commonMaterials = ['хлопок', 'полиэстер', 'вискоза', 'шерсть', 'лён', 'шёлк', 'нейлон', 'эластан', 'акрил', 'синтетика', 'кашемир', 'бамбук']
 
+const layerMap: Record<string, number> = {}
+const l1 = ['футболка', 'майка', 'топ', 'нижнее белье', 'купальник', 'носки', 'колготки', 'пижама', 'боди', 'ползунки', 'распашонка']
+const l2 = ['платье', 'юбка', 'брюки', 'шорты', 'рубашка', 'блузка', 'жакет', 'костюм', 'свитер', 'пуловер', 'кардиган', 'джемпер', 'водолазка', 'жилет', 'сарафан', 'комбинезон', 'леггинсы', 'халат', 'толстовка', 'худи']
+const l3 = ['пальто', 'куртка', 'плащ', 'ветровка', 'пуховик', 'парка', 'бомбер', 'тренч']
+l1.forEach(i => layerMap[i] = 1); l2.forEach(i => layerMap[i] = 2); l3.forEach(i => layerMap[i] = 3)
+
+const autoLayer = (pt: string) => layerMap[pt.toLowerCase()] || 2
+
 const emptyForm = {
   article: '', name: '', product_type: 'платье', weaving_type: 'трикотаж' as any,
   target_group: 'adult_female' as any, age_group: undefined as string | undefined, layer: 1 as any,
@@ -73,12 +81,12 @@ export default function ProductsPage() {
             </div>
             <div>
               <label className="block text-sm font-medium text-[var(--color-coffee-600)] mb-1.5">Тип изделия</label>
-              <select value={form.product_type} onChange={e => setForm({ ...form, product_type: e.target.value })} className={inputClass}>
+              <select value={form.product_type} onChange={e => { const pt = e.target.value; setForm({ ...form, product_type: pt, layer: autoLayer(pt) as any }) }} className={inputClass}>
                 {productTypes.map(t => <option key={t}>{t}</option>)}
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-[var(--color-coffee-600)] mb-1.5">Тип материала</label>
+              <label className="block text-sm font-medium text-[var(--color-coffee-600)] mb-1.5">Вид плетения</label>
               <select value={form.weaving_type} onChange={e => setForm({ ...form, weaving_type: e.target.value })} className={inputClass}>
                 {weavingTypes.map(t => <option key={t}>{t}</option>)}
               </select>
@@ -90,9 +98,9 @@ export default function ProductsPage() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-[var(--color-coffee-600)] mb-1.5">Слой</label>
-              <select value={form.layer} onChange={e => setForm({ ...form, layer: Number(e.target.value) })} className={inputClass}>
-                <option value={1}>1 слой</option><option value={2}>2 слой</option><option value={3}>3 слой</option>
+              <label className="block text-sm font-medium text-[var(--color-coffee-600)] mb-1.5">Слой <span className="text-xs text-[var(--color-coffee-500)] font-normal">(авто)</span></label>
+              <select value={form.layer} onChange={e => setForm({ ...form, layer: Number(e.target.value) as any })} className={inputClass}>
+                <option value={1}>1 — нательное</option><option value={2}>2 — обычная одежда</option><option value={3}>3 — верхняя одежда</option>
               </select>
             </div>
             {form.target_group === 'child' && (
