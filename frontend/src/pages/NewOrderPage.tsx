@@ -21,7 +21,7 @@ const STEPS = [
 ]
 
 const inputClass =
-  'w-full px-3.5 py-2.5 border border-[var(--color-angora-dark)] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-rose-300)] focus:border-transparent bg-white text-[var(--color-coffee-700)] placeholder:text-[var(--color-coffee-500)]/50'
+  'w-full px-3.5 py-2.5 border border-[var(--color-angora-dark)] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-rose-300)] focus:border-transparent bg-[var(--color-surface)] text-[var(--color-coffee-700)] placeholder:text-[var(--color-coffee-500)]/50'
 
 const labelClass = 'block text-sm font-medium text-[var(--color-coffee-600)] mb-1.5'
 
@@ -195,7 +195,7 @@ export default function NewOrderPage() {
       </div>
 
       {/* Step Progress */}
-      <div className="bg-white rounded-2xl shadow-sm border border-[var(--color-angora-dark)] p-4 sm:p-5 mb-6">
+      <div className="bg-[var(--color-surface)] rounded-2xl shadow-sm border border-[var(--color-angora-dark)] p-4 sm:p-5 mb-6">
         <div className="flex items-center gap-1 sm:gap-2 overflow-x-auto pb-1">
           {STEPS.map((s, i) => (
             <button
@@ -212,7 +212,7 @@ export default function NewOrderPage() {
             >
               <span className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold ${
                 i === step
-                  ? 'bg-white/25 text-white'
+                  ? 'bg-[var(--color-surface)]/25 text-white'
                   : i < step
                     ? 'bg-[var(--color-sage-200)] text-[var(--color-sage-700)]'
                     : 'bg-[var(--color-angora)] text-[var(--color-coffee-500)]/50'
@@ -226,7 +226,7 @@ export default function NewOrderPage() {
       </div>
 
       {/* Step Content */}
-      <div className="bg-white rounded-2xl shadow-sm border border-[var(--color-angora-dark)] p-5 sm:p-8">
+      <div className="bg-[var(--color-surface)] rounded-2xl shadow-sm border border-[var(--color-angora-dark)] p-5 sm:p-8">
         {/* Step 1: Client */}
         {step === 0 && (
           <div>

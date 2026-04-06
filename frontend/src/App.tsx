@@ -21,7 +21,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-[var(--color-onyx)]">
-      <nav className="bg-white/80 backdrop-blur-md border-b border-[var(--color-angora-dark)] sticky top-0 z-50">
+      <nav className="bg-[var(--color-surface)]/80 backdrop-blur-md border-b border-[var(--color-angora-dark)] sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="flex items-center justify-between h-14 sm:h-16">
             <NavLink to="/" className="flex items-center gap-2.5" onClick={() => setMenuOpen(false)}>
@@ -46,7 +46,7 @@ export default function App() {
           </div>
         </div>
         {menuOpen && (
-          <div className="md:hidden border-t border-[var(--color-angora-dark)] bg-white/95 backdrop-blur-md">
+          <div className="md:hidden border-t border-[var(--color-angora-dark)] bg-[var(--color-surface)]/95 backdrop-blur-md">
             <div className="px-4 py-3 space-y-1">
               {navItems.map(item => (
                 <NavLink key={item.to} to={item.to} end={item.to === '/'} onClick={() => setMenuOpen(false)}

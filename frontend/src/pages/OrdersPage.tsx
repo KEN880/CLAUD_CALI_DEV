@@ -62,7 +62,7 @@ function InlineDropdown<T extends string>({
     <div className="relative" ref={ref}>
       {renderTrigger(value, () => setOpen(!open))}
       {open && (
-        <div className="absolute z-30 mt-1 left-0 min-w-[140px] bg-white rounded-xl shadow-lg border border-[var(--color-angora-dark)] py-1">
+        <div className="absolute z-30 mt-1 left-0 min-w-[140px] bg-[var(--color-surface)] rounded-xl shadow-lg border border-[var(--color-angora-dark)] py-1">
           {options.map((opt) => (
             <button
               key={opt}
@@ -147,13 +147,13 @@ export default function OrdersPage() {
       {loading ? (
         <div className="text-center py-16 text-[var(--color-coffee-500)]">Загрузка...</div>
       ) : orders.length === 0 ? (
-        <div className="text-center text-[var(--color-coffee-500)] py-12 sm:py-16 bg-white rounded-2xl border border-[var(--color-angora-dark)]">
+        <div className="text-center text-[var(--color-coffee-500)] py-12 sm:py-16 bg-[var(--color-surface)] rounded-2xl border border-[var(--color-angora-dark)]">
           Нет заказов. Создайте первый!
         </div>
       ) : (
         <>
           {/* Desktop Table */}
-          <div className="hidden lg:block bg-white rounded-2xl shadow-sm border border-[var(--color-angora-dark)] overflow-hidden">
+          <div className="hidden lg:block bg-[var(--color-surface)] rounded-2xl shadow-sm border border-[var(--color-angora-dark)] overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
@@ -281,7 +281,7 @@ export default function OrdersPage() {
           {/* Mobile Cards */}
           <div className="lg:hidden space-y-3">
             {orders.map((order) => (
-              <div key={order.id} className="bg-white rounded-2xl shadow-sm border border-[var(--color-angora-dark)] p-4">
+              <div key={order.id} className="bg-[var(--color-surface)] rounded-2xl shadow-sm border border-[var(--color-angora-dark)] p-4">
                 {/* Card header */}
                 <div className="flex items-start justify-between gap-2 mb-3">
                   <div className="min-w-0">
@@ -387,7 +387,7 @@ export default function OrdersPage() {
           </div>
 
           {/* Summary footer */}
-          <div className="mt-5 bg-white rounded-2xl shadow-sm border border-[var(--color-angora-dark)] p-4 sm:p-5 flex flex-col sm:flex-row justify-between gap-3">
+          <div className="mt-5 bg-[var(--color-surface)] rounded-2xl shadow-sm border border-[var(--color-angora-dark)] p-4 sm:p-5 flex flex-col sm:flex-row justify-between gap-3">
             <div className="text-sm text-[var(--color-coffee-600)]">
               Всего: <span className="font-bold text-[var(--color-coffee-800)]">{orders.length}</span> заказ(ов)
             </div>

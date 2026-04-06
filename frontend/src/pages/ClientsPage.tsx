@@ -31,7 +31,7 @@ export default function ClientsPage() {
 
   const handleFileUpload = async (clientId: number, file: File) => { await clientsApi.uploadCertificate(clientId, file); load() }
 
-  const inputClass = "w-full px-3.5 py-2.5 border border-[var(--color-angora-dark)] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-rose-300)] focus:border-transparent bg-white text-[var(--color-coffee-700)] placeholder:text-[var(--color-coffee-500)]/50"
+  const inputClass = "w-full px-3.5 py-2.5 border border-[var(--color-angora-dark)] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-rose-300)] focus:border-transparent bg-[var(--color-surface)] text-[var(--color-coffee-700)] placeholder:text-[var(--color-coffee-500)]/50"
 
   return (
     <div>
@@ -49,7 +49,7 @@ export default function ClientsPage() {
       <input type="text" placeholder="Поиск по ФИО или ИНН..." value={search} onChange={e => setSearch(e.target.value)} className={`${inputClass} mb-5`} />
 
       {showForm && (
-        <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-sm border border-[var(--color-angora-dark)] p-5 sm:p-8 mb-6 sm:mb-8">
+        <form onSubmit={handleSubmit} className="bg-[var(--color-surface)] rounded-2xl shadow-sm border border-[var(--color-angora-dark)] p-5 sm:p-8 mb-6 sm:mb-8">
           <h2 className="text-lg font-bold text-[var(--color-coffee-800)] mb-5">{editing ? 'Редактирование' : 'Новый клиент'}</h2>
 
           <div className="mb-5">
@@ -112,7 +112,7 @@ export default function ClientsPage() {
 
       <div className="space-y-3">
         {clients.map(c => (
-          <div key={c.id} className="bg-white rounded-2xl shadow-sm border border-[var(--color-angora-dark)] p-4 sm:p-5">
+          <div key={c.id} className="bg-[var(--color-surface)] rounded-2xl shadow-sm border border-[var(--color-angora-dark)] p-4 sm:p-5">
             <div className="flex flex-col sm:flex-row justify-between gap-3">
               <div className="min-w-0">
                 <div className="flex items-center gap-2 mb-1.5 flex-wrap">
@@ -137,7 +137,7 @@ export default function ClientsPage() {
           </div>
         ))}
         {clients.length === 0 && (
-          <div className="text-center text-[var(--color-coffee-500)] py-12 sm:py-16 bg-white rounded-2xl border border-[var(--color-angora-dark)]">Нет клиентов. Добавьте первого!</div>
+          <div className="text-center text-[var(--color-coffee-500)] py-12 sm:py-16 bg-[var(--color-surface)] rounded-2xl border border-[var(--color-angora-dark)]">Нет клиентов. Добавьте первого!</div>
         )}
       </div>
     </div>

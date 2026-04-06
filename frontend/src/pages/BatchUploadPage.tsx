@@ -22,7 +22,7 @@ export default function BatchUploadPage() {
         <p className="text-sm text-[var(--color-coffee-500)] mt-1">Массовая загрузка из CSV / Excel</p>
       </div>
 
-      <div className="bg-white rounded-2xl shadow-sm border border-[var(--color-angora-dark)] p-5 sm:p-8 mb-6 sm:mb-8">
+      <div className="bg-[var(--color-surface)] rounded-2xl shadow-sm border border-[var(--color-angora-dark)] p-5 sm:p-8 mb-6 sm:mb-8">
         {/* Format hint */}
         <div className="bg-[var(--color-angora)]/50 rounded-xl p-4 mb-6 overflow-x-auto">
           <h3 className="text-sm font-semibold text-[var(--color-coffee-700)] mb-2">Формат файла</h3>
@@ -77,7 +77,7 @@ export default function BatchUploadPage() {
       </div>
 
       {results.length > 0 && (
-        <div className="bg-white rounded-2xl shadow-sm border border-[var(--color-angora-dark)] overflow-hidden">
+        <div className="bg-[var(--color-surface)] rounded-2xl shadow-sm border border-[var(--color-angora-dark)] overflow-hidden">
           <div className="px-4 sm:px-5 py-3 bg-gradient-to-r from-[var(--color-sage-50)] to-[var(--color-sage-100)] border-b border-[var(--color-sage-200)]">
             <span className="text-sm font-semibold text-[var(--color-sage-700)]">Загружено: {results.length} товаров</span>
           </div>

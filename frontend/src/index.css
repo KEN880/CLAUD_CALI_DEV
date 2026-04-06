@@ -1,16 +1,10 @@
 @import "tailwindcss";
 
-/* NYFW SS26 Color Palette + Soft Pink Accent */
-@theme {
-  /* Marina — primary blue */
-  --color-marina-50: #f0f5f9;
-  --color-marina-100: #dce8f0;
-  --color-marina-200: #b8d0e1;
-  --color-marina-500: #4b7f9e;
-  --color-marina-600: #3d6a86;
-  --color-marina-700: #2f5469;
+/* NYFW SS26 Color Palette — Light + Dark themes */
+/* Dusty Rose accent preserved in both themes */
 
-  /* Dusty Rose — soft pink accent */
+:root {
+  /* Dusty Rose — accent (same in both themes) */
   --color-rose-50: #fdf2f4;
   --color-rose-100: #fbe5e9;
   --color-rose-200: #f5c6ce;
@@ -19,23 +13,35 @@
   --color-rose-500: #c9848a;
   --color-rose-600: #b05a6b;
 
-  /* Burnished Lilac — secondary accent */
+  /* Marina — primary blue */
+  --color-marina-50: #f0f5f9;
+  --color-marina-100: #dce8f0;
+  --color-marina-200: #b8d0e1;
+  --color-marina-500: #4b7f9e;
+  --color-marina-600: #3d6a86;
+  --color-marina-700: #2f5469;
+
+  /* Burnished Lilac */
   --color-lilac-50: #f6f3f7;
   --color-lilac-100: #ece6f0;
   --color-lilac-200: #d4c9de;
   --color-lilac-400: #9b8da6;
   --color-lilac-500: #7b6f88;
 
-  /* Coffee Bean — dark text */
+  /* Coffee Bean — text */
   --color-coffee-800: #3c2415;
   --color-coffee-700: #4a3020;
   --color-coffee-600: #5c3f2e;
   --color-coffee-500: #6e5040;
 
-  /* White Onyx & Angora — warm backgrounds */
+  /* Backgrounds */
   --color-onyx: #faf8f5;
   --color-angora: #f0ebe3;
   --color-angora-dark: #e4ddd3;
+
+  /* Card / surface */
+  --color-surface: #ffffff;
+  --color-surface-hover: #faf8f5;
 
   /* Sage Green — success */
   --color-sage-50: #f2f5f0;
@@ -63,6 +69,129 @@
   --color-lava-100: #fbe5e5;
   --color-lava-500: #bd3039;
   --color-lava-600: #9e2530;
+
+  color-scheme: light dark;
+}
+
+/* ========== DARK THEME ========== */
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Rose accent — brighter in dark */
+    --color-rose-50: #2a1a1e;
+    --color-rose-100: #3d2028;
+    --color-rose-200: #5c2f3a;
+    --color-rose-300: #b06878;
+    --color-rose-400: #d4788a;
+    --color-rose-500: #e08a96;
+    --color-rose-600: #d4788a;
+
+    /* Marina */
+    --color-marina-50: #141e25;
+    --color-marina-100: #1a2b36;
+    --color-marina-200: #253d4d;
+    --color-marina-500: #5a9bbd;
+    --color-marina-600: #6db0d3;
+    --color-marina-700: #8ec5e3;
+
+    /* Lilac */
+    --color-lilac-50: #1e1a22;
+    --color-lilac-100: #2a2430;
+    --color-lilac-200: #3d3548;
+    --color-lilac-400: #a99ab5;
+    --color-lilac-500: #bfb0cc;
+
+    /* Coffee — now light text on dark bg */
+    --color-coffee-800: #f0e8e0;
+    --color-coffee-700: #e0d4c8;
+    --color-coffee-600: #c8b8a8;
+    --color-coffee-500: #a09080;
+
+    /* Backgrounds — deep warm dark */
+    --color-onyx: #131118;
+    --color-angora: #1c1924;
+    --color-angora-dark: #252230;
+
+    /* Surface */
+    --color-surface: #1a1722;
+    --color-surface-hover: #211e2a;
+
+    /* Sage */
+    --color-sage-50: #151c14;
+    --color-sage-100: #1e2a1c;
+    --color-sage-200: #2a3d26;
+    --color-sage-500: #7ea06d;
+    --color-sage-600: #92b880;
+    --color-sage-700: #a8cc98;
+
+    /* Melon */
+    --color-melon-50: #221a12;
+    --color-melon-100: #332518;
+    --color-melon-200: #4d3820;
+    --color-melon-500: #e8985e;
+    --color-melon-600: #f0a870;
+
+    /* Amaranth */
+    --color-amaranth-50: #1e1520;
+    --color-amaranth-100: #2d1e2a;
+    --color-amaranth-200: #442e3e;
+    --color-amaranth-500: #a06090;
+
+    /* Lava */
+    --color-lava-50: #251515;
+    --color-lava-100: #381c1c;
+    --color-lava-500: #e04050;
+    --color-lava-600: #cc3040;
+  }
+}
+
+/* Register as Tailwind theme tokens */
+@theme {
+  --color-rose-50: var(--color-rose-50);
+  --color-rose-100: var(--color-rose-100);
+  --color-rose-200: var(--color-rose-200);
+  --color-rose-300: var(--color-rose-300);
+  --color-rose-400: var(--color-rose-400);
+  --color-rose-500: var(--color-rose-500);
+  --color-rose-600: var(--color-rose-600);
+  --color-marina-50: var(--color-marina-50);
+  --color-marina-100: var(--color-marina-100);
+  --color-marina-200: var(--color-marina-200);
+  --color-marina-500: var(--color-marina-500);
+  --color-marina-600: var(--color-marina-600);
+  --color-marina-700: var(--color-marina-700);
+  --color-lilac-50: var(--color-lilac-50);
+  --color-lilac-100: var(--color-lilac-100);
+  --color-lilac-200: var(--color-lilac-200);
+  --color-lilac-400: var(--color-lilac-400);
+  --color-lilac-500: var(--color-lilac-500);
+  --color-coffee-800: var(--color-coffee-800);
+  --color-coffee-700: var(--color-coffee-700);
+  --color-coffee-600: var(--color-coffee-600);
+  --color-coffee-500: var(--color-coffee-500);
+  --color-onyx: var(--color-onyx);
+  --color-angora: var(--color-angora);
+  --color-angora-dark: var(--color-angora-dark);
+  --color-surface: var(--color-surface);
+  --color-surface-hover: var(--color-surface-hover);
+  --color-sage-50: var(--color-sage-50);
+  --color-sage-100: var(--color-sage-100);
+  --color-sage-200: var(--color-sage-200);
+  --color-sage-500: var(--color-sage-500);
+  --color-sage-600: var(--color-sage-600);
+  --color-sage-700: var(--color-sage-700);
+  --color-melon-50: var(--color-melon-50);
+  --color-melon-100: var(--color-melon-100);
+  --color-melon-200: var(--color-melon-200);
+  --color-melon-500: var(--color-melon-500);
+  --color-melon-600: var(--color-melon-600);
+  --color-amaranth-50: var(--color-amaranth-50);
+  --color-amaranth-100: var(--color-amaranth-100);
+  --color-amaranth-200: var(--color-amaranth-200);
+  --color-amaranth-500: var(--color-amaranth-500);
+  --color-lava-50: var(--color-lava-50);
+  --color-lava-100: var(--color-lava-100);
+  --color-lava-500: var(--color-lava-500);
+  --color-lava-600: var(--color-lava-600);
 }
 
 :root {
@@ -78,13 +207,13 @@ body {
   margin: 0;
   background: var(--color-onyx);
   color: var(--color-coffee-700);
+  transition: background-color 0.3s, color 0.3s;
 }
 
 #root {
   min-height: 100vh;
 }
 
-/* Utility for mono font */
 .font-mono {
   font-family: 'JetBrains Mono', ui-monospace, monospace;
 }

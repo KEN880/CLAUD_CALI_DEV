@@ -24,7 +24,7 @@ export default function CalculatorPage() {
         <p className="text-sm text-[var(--color-coffee-500)] mt-1">Расчёт стоимости сертификации</p>
       </div>
 
-      <div className="bg-white rounded-2xl shadow-sm border border-[var(--color-angora-dark)] p-5 sm:p-8 space-y-6 sm:space-y-8">
+      <div className="bg-[var(--color-surface)] rounded-2xl shadow-sm border border-[var(--color-angora-dark)] p-5 sm:p-8 space-y-6 sm:space-y-8">
         {/* Country Type */}
         <div>
           <label className="block text-sm font-semibold text-[var(--color-coffee-700)] mb-3">Тип заявителя</label>

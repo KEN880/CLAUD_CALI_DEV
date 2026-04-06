@@ -53,7 +53,7 @@ export default function ProductsPage() {
 
   const handleDelete = async (id: number) => { await productsApi.delete(id); load() }
 
-  const inputClass = "w-full px-3.5 py-2.5 border border-[var(--color-angora-dark)] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-rose-300)] focus:border-transparent bg-white text-[var(--color-coffee-700)]"
+  const inputClass = "w-full px-3.5 py-2.5 border border-[var(--color-angora-dark)] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-rose-300)] focus:border-transparent bg-[var(--color-surface)] text-[var(--color-coffee-700)]"
 
   return (
     <div>
@@ -69,7 +69,7 @@ export default function ProductsPage() {
       </div>
 
       {showForm && (
-        <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-sm border border-[var(--color-angora-dark)] p-5 sm:p-8 mb-6 sm:mb-8">
+        <form onSubmit={handleSubmit} className="bg-[var(--color-surface)] rounded-2xl shadow-sm border border-[var(--color-angora-dark)] p-5 sm:p-8 mb-6 sm:mb-8">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-[var(--color-coffee-600)] mb-1.5">Артикул</label>
@@ -160,7 +160,7 @@ export default function ProductsPage() {
       {/* Mobile: cards */}
       <div className="sm:hidden space-y-3">
         {products.map(p => (
-          <div key={p.id} className="bg-white rounded-2xl shadow-sm border border-[var(--color-angora-dark)] p-4">
+          <div key={p.id} className="bg-[var(--color-surface)] rounded-2xl shadow-sm border border-[var(--color-angora-dark)] p-4">
             <div className="flex justify-between items-start mb-2">
               <div>
                 <span className="font-semibold text-[var(--color-coffee-800)]">{p.article}</span>
@@ -182,11 +182,11 @@ export default function ProductsPage() {
             </div>
           </div>
         ))}
-        {products.length === 0 && <div className="text-center text-[var(--color-coffee-500)] py-12 bg-white rounded-2xl border border-[var(--color-angora-dark)]">Нет продукции</div>}
+        {products.length === 0 && <div className="text-center text-[var(--color-coffee-500)] py-12 bg-[var(--color-surface)] rounded-2xl border border-[var(--color-angora-dark)]">Нет продукции</div>}
       </div>
 
       {/* Desktop: table */}
-      <div className="hidden sm:block bg-white rounded-2xl shadow-sm border border-[var(--color-angora-dark)] overflow-hidden">
+      <div className="hidden sm:block bg-[var(--color-surface)] rounded-2xl shadow-sm border border-[var(--color-angora-dark)] overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
