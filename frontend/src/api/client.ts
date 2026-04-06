@@ -186,7 +186,7 @@ const demoProducts: Product[] = [
     doc_type: 'CC',
     tr_ts: '017/2011',
     requires_sgr: false,
-    tnved_code: '6104 42',
+    tnved_code: '6104 42 000 0',
   },
   {
     id: 2,
@@ -195,16 +195,16 @@ const demoProducts: Product[] = [
     product_type: 'юбка',
     weaving_type: 'швейка',
     target_group: 'adult_female',
-    layer: 1,
+    layer: 2,
     trademark: 'Marina Style',
     compositions: [
       { id: 3, material_name: 'полиэстер', percentage: 65 },
       { id: 4, material_name: 'вискоза', percentage: 35 },
     ],
-    doc_type: 'CC',
+    doc_type: 'DC',
     tr_ts: '017/2011',
     requires_sgr: false,
-    tnved_code: '6204 43',
+    tnved_code: '6204 43 000 0',
   },
   {
     id: 3,
@@ -221,7 +221,7 @@ const demoProducts: Product[] = [
     doc_type: 'DC',
     tr_ts: '017/2011',
     requires_sgr: false,
-    tnved_code: '6203 41',
+    tnved_code: '6203 41 100 0',
   },
   {
     id: 4,
@@ -237,7 +237,7 @@ const demoProducts: Product[] = [
     doc_type: 'CC',
     tr_ts: '007/2011',
     requires_sgr: true,
-    tnved_code: '6111 20',
+    tnved_code: '6114 20 000 0',
   },
   {
     id: 5,
@@ -255,7 +255,7 @@ const demoProducts: Product[] = [
     doc_type: 'DC',
     tr_ts: '017/2011',
     requires_sgr: false,
-    tnved_code: '6110 30',
+    tnved_code: '6110 30 100 0',
   },
 ];
 
@@ -643,7 +643,7 @@ export const tnvedApi = {
   }): Promise<{ code: string; description: string }> => {
     if (isDemo) {
       return Promise.resolve({
-        code: '6104 42',
+        code: '6104 42 000 0',
         description: 'Демо -- запустите бэкенд для точного результата',
       });
     }
