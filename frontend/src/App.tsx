@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Routes, Route, NavLink } from 'react-router-dom'
 import { isDemo } from './api/client'
 import OrdersPage from './pages/OrdersPage'
@@ -16,8 +16,24 @@ const navItems = [
   { to: '/batch', label: 'Импорт' },
 ]
 
+function useTheme() {
+  const [dark, setDark] = useState(() => {
+    const saved = localStorage.getItem('cali-theme')
+    if (saved) return saved === 'dark'
+    return window.matchMedia('(prefers-color-scheme: dark)').matches
+  })
+
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', dark)
+    localStorage.setItem('cali-theme', dark ? 'dark' : 'light')
+  }, [dark])
+
+  return [dark, () => setDark(!dark)] as const
+}
+
 export default function App() {
   const [menuOpen, setMenuOpen] = useState(false)
+  const [dark, toggleTheme] = useTheme()
 
   return (
     <div className="min-h-screen bg-[var(--color-onyx)]">
@@ -30,6 +46,7 @@ export default function App() {
               </div>
               <span className="text-lg font-bold tracking-tight text-[var(--color-coffee-800)]">CALI</span>
             </NavLink>
+
             <div className="hidden md:flex gap-0.5">
               {navItems.map(item => (
                 <NavLink key={item.to} to={item.to} end={item.to === '/'}
@@ -38,13 +55,35 @@ export default function App() {
                 </NavLink>
               ))}
             </div>
-            <button onClick={() => setMenuOpen(!menuOpen)} className="md:hidden p-2 rounded-lg text-[var(--color-coffee-600)] hover:bg-[var(--color-angora)]">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                {menuOpen ? <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /> : <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />}
-              </svg>
-            </button>
+
+            <div className="flex items-center gap-2">
+              {/* Theme toggle */}
+              <button
+                onClick={toggleTheme}
+                className="p-2 rounded-lg text-[var(--color-coffee-500)] hover:text-[var(--color-coffee-700)] hover:bg-[var(--color-angora)] transition-all"
+                title={dark ? 'Светлая тема' : 'Тёмная тема'}
+              >
+                {dark ? (
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                  </svg>
+                ) : (
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                  </svg>
+                )}
+              </button>
+
+              {/* Mobile burger */}
+              <button onClick={() => setMenuOpen(!menuOpen)} className="md:hidden p-2 rounded-lg text-[var(--color-coffee-600)] hover:bg-[var(--color-angora)]">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  {menuOpen ? <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /> : <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />}
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
+
         {menuOpen && (
           <div className="md:hidden border-t border-[var(--color-angora-dark)] bg-[var(--color-surface)]/95 backdrop-blur-md">
             <div className="px-4 py-3 space-y-1">

@@ -74,8 +74,8 @@
 }
 
 /* ========== DARK THEME ========== */
-@media (prefers-color-scheme: dark) {
-  :root {
+/* Activated by .dark class on <html> */
+.dark {
     /* Rose accent — brighter in dark */
     --color-rose-50: #2a1a1e;
     --color-rose-100: #3d2028;
@@ -141,7 +141,6 @@
     --color-lava-100: #381c1c;
     --color-lava-500: #e04050;
     --color-lava-600: #cc3040;
-  }
 }
 
 /* Register as Tailwind theme tokens */
