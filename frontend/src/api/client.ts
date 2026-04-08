@@ -75,7 +75,7 @@ export interface Order {
   tr_ts: string;
   duration_years: number;
   protocol_count: number;
-  status: '1 очередь' | '2 очередь' | '3 очередь' | 'Выпущен';
+  status: 'Новый' | 'Готов' | 'В работе' | 'Выпущен';
   layout_status: 'Нет' | 'В процессе' | 'Готов' | 'Утвержден';
   sample_status: 'Нет' | 'Получен';
   cert_body?: string;
@@ -295,7 +295,7 @@ const demoOrders: Order[] = [
     tr_ts: '007/2011',
     duration_years: 1,
     protocol_count: 1,
-    status: '2 очередь',
+    status: 'Готов',
     layout_status: 'Готов',
     sample_status: 'Получен',
     cert_body: 'ОС "Тест-KG"',
@@ -322,7 +322,7 @@ const demoOrders: Order[] = [
     tr_ts: '017/2011',
     duration_years: 3,
     protocol_count: 1,
-    status: '1 очередь',
+    status: 'Новый',
     layout_status: 'В процессе',
     sample_status: 'Нет',
     original_status: 'Нет',
@@ -347,7 +347,7 @@ const demoOrders: Order[] = [
     tr_ts: '017/2011',
     duration_years: 3,
     protocol_count: 1,
-    status: '1 очередь',
+    status: 'Новый',
     layout_status: 'Нет',
     sample_status: 'Нет',
     original_status: 'Нет',
@@ -386,6 +386,33 @@ const demoOrders: Order[] = [
     client: demoClients[1],
     manufacturer: demoManufacturers[1],
     products: [demoProducts[0]],
+  },
+  {
+    id: 6,
+    client_id: 3,
+    manufacturer_id: 2,
+    doc_type: 'CC',
+    tr_ts: '007/2011',
+    duration_years: 1,
+    protocol_count: 2,
+    status: 'В работе',
+    layout_status: 'Утвержден',
+    sample_status: 'Получен',
+    cert_body: 'КыргызСтандарт',
+    original_status: 'Нет',
+    pi_status: 'Нет',
+    expected_date: '2026-04-20',
+    prepayment: 20000,
+    payment_date: '2026-04-03',
+    payment_method: 'ИП',
+    total_price: 37000,
+    client_debt: 17000,
+    partner: 'Бектур',
+    notes: 'Отправлен в ОС, ждём результаты',
+    created_at: '2026-03-28T16:00:00',
+    client: demoClients[2],
+    manufacturer: demoManufacturers[1],
+    products: [demoProducts[3], demoProducts[4]],
   },
 ];
 
@@ -560,7 +587,7 @@ export const ordersApi = {
         tr_ts: data.tr_ts,
         duration_years: data.duration_years,
         protocol_count: data.protocol_count,
-        status: '1 очередь',
+        status: 'Новый',
         layout_status: 'Нет',
         sample_status: 'Нет',
         original_status: 'Нет',

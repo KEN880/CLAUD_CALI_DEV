@@ -1,20 +1,9 @@
 import { useState, useEffect } from 'react'
 import { Routes, Route, NavLink } from 'react-router-dom'
 import { isDemo } from './api/client'
-import OrdersPage from './pages/OrdersPage'
+import KanbanPage from './pages/KanbanPage'
 import NewOrderPage from './pages/NewOrderPage'
 import ClientsPage from './pages/ClientsPage'
-import ProductsPage from './pages/ProductsPage'
-import CalculatorPage from './pages/CalculatorPage'
-import BatchUploadPage from './pages/BatchUploadPage'
-
-const navItems = [
-  { to: '/', label: 'Заказы' },
-  { to: '/clients', label: 'Клиенты' },
-  { to: '/products', label: 'Продукция' },
-  { to: '/calculator', label: 'Калькулятор' },
-  { to: '/batch', label: 'Импорт' },
-]
 
 function useTheme() {
   const [dark, setDark] = useState(() => {
@@ -22,12 +11,10 @@ function useTheme() {
     if (saved) return saved === 'dark'
     return window.matchMedia('(prefers-color-scheme: dark)').matches
   })
-
   useEffect(() => {
     document.documentElement.classList.toggle('dark', dark)
     localStorage.setItem('cali-theme', dark ? 'dark' : 'light')
   }, [dark])
-
   return [dark, () => setDark(!dark)] as const
 }
 
@@ -48,21 +35,24 @@ export default function App() {
             </NavLink>
 
             <div className="hidden md:flex gap-0.5">
-              {navItems.map(item => (
-                <NavLink key={item.to} to={item.to} end={item.to === '/'}
-                  className={({ isActive }) => `px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${isActive ? 'bg-[var(--color-rose-50)] text-[var(--color-rose-600)] shadow-sm' : 'text-[var(--color-coffee-500)] hover:text-[var(--color-coffee-700)] hover:bg-[var(--color-angora)]'}`}>
-                  {item.label}
-                </NavLink>
-              ))}
+              <NavLink to="/" end
+                className={({ isActive }) => `px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${isActive ? 'bg-[var(--color-rose-50)] text-[var(--color-rose-600)] shadow-sm' : 'text-[var(--color-coffee-500)] hover:text-[var(--color-coffee-700)] hover:bg-[var(--color-angora)]'}`}>
+                Доска
+              </NavLink>
+              <NavLink to="/clients"
+                className={({ isActive }) => `px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${isActive ? 'bg-[var(--color-rose-50)] text-[var(--color-rose-600)] shadow-sm' : 'text-[var(--color-coffee-500)] hover:text-[var(--color-coffee-700)] hover:bg-[var(--color-angora)]'}`}>
+                Клиенты
+              </NavLink>
+              <NavLink to="/new"
+                className="px-4 py-2 rounded-lg text-sm font-semibold bg-gradient-to-r from-[var(--color-rose-400)] to-[var(--color-rose-500)] text-white hover:shadow-lg hover:shadow-[var(--color-rose-200)] transition-all duration-200">
+                + Заказ
+              </NavLink>
             </div>
 
             <div className="flex items-center gap-2">
-              {/* Theme toggle */}
-              <button
-                onClick={toggleTheme}
+              <button onClick={toggleTheme}
                 className="p-2 rounded-lg text-[var(--color-coffee-500)] hover:text-[var(--color-coffee-700)] hover:bg-[var(--color-angora)] transition-all"
-                title={dark ? 'Светлая тема' : 'Тёмная тема'}
-              >
+                title={dark ? 'Светлая тема' : 'Тёмная тема'}>
                 {dark ? (
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
@@ -73,8 +63,6 @@ export default function App() {
                   </svg>
                 )}
               </button>
-
-              {/* Mobile burger */}
               <button onClick={() => setMenuOpen(!menuOpen)} className="md:hidden p-2 rounded-lg text-[var(--color-coffee-600)] hover:bg-[var(--color-angora)]">
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   {menuOpen ? <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /> : <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />}
@@ -87,12 +75,18 @@ export default function App() {
         {menuOpen && (
           <div className="md:hidden border-t border-[var(--color-angora-dark)] bg-[var(--color-surface)]/95 backdrop-blur-md">
             <div className="px-4 py-3 space-y-1">
-              {navItems.map(item => (
-                <NavLink key={item.to} to={item.to} end={item.to === '/'} onClick={() => setMenuOpen(false)}
-                  className={({ isActive }) => `block px-4 py-3 rounded-xl text-sm font-medium transition-all ${isActive ? 'bg-[var(--color-rose-50)] text-[var(--color-rose-600)]' : 'text-[var(--color-coffee-600)] hover:bg-[var(--color-angora)]'}`}>
-                  {item.label}
-                </NavLink>
-              ))}
+              <NavLink to="/" end onClick={() => setMenuOpen(false)}
+                className={({ isActive }) => `block px-4 py-3 rounded-xl text-sm font-medium transition-all ${isActive ? 'bg-[var(--color-rose-50)] text-[var(--color-rose-600)]' : 'text-[var(--color-coffee-600)] hover:bg-[var(--color-angora)]'}`}>
+                Доска
+              </NavLink>
+              <NavLink to="/clients" onClick={() => setMenuOpen(false)}
+                className={({ isActive }) => `block px-4 py-3 rounded-xl text-sm font-medium transition-all ${isActive ? 'bg-[var(--color-rose-50)] text-[var(--color-rose-600)]' : 'text-[var(--color-coffee-600)] hover:bg-[var(--color-angora)]'}`}>
+                Клиенты
+              </NavLink>
+              <NavLink to="/new" onClick={() => setMenuOpen(false)}
+                className="block px-4 py-3 rounded-xl text-sm font-semibold text-center bg-gradient-to-r from-[var(--color-rose-400)] to-[var(--color-rose-500)] text-white">
+                + Новый заказ
+              </NavLink>
             </div>
           </div>
         )}
@@ -100,26 +94,17 @@ export default function App() {
 
       {isDemo && (
         <div className="bg-gradient-to-r from-[var(--color-rose-400)] to-[var(--color-marina-500)] text-white text-center py-2 px-4 text-xs sm:text-sm font-medium">
-          Демо-режим — данные локальные. Для полного функционала запустите на своём устройстве.
+          Демо-режим — данные локальные
         </div>
       )}
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-5 sm:py-8">
         <Routes>
-          <Route path="/" element={<OrdersPage />} />
-          <Route path="/orders/new" element={<NewOrderPage />} />
+          <Route path="/" element={<KanbanPage />} />
+          <Route path="/new" element={<NewOrderPage />} />
           <Route path="/clients" element={<ClientsPage />} />
-          <Route path="/products" element={<ProductsPage />} />
-          <Route path="/calculator" element={<CalculatorPage />} />
-          <Route path="/batch" element={<BatchUploadPage />} />
         </Routes>
       </main>
-
-      <footer className="border-t border-[var(--color-angora-dark)] mt-8 sm:mt-12 py-5">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 text-center text-xs sm:text-sm text-[var(--color-coffee-500)]">
-          CALI v2.0 — Certification Automation
-        </div>
-      </footer>
     </div>
   )
 }

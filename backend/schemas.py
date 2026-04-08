@@ -109,7 +109,7 @@ class OrderCreate(BaseModel):
     tr_ts: str
     duration_years: int = 1
     protocol_count: int = 1
-    status: str = "1 очередь"
+    status: str = "Новый"
     layout_status: str = "Нет"
     sample_status: str = "Нет"
     cert_body: Optional[str] = None

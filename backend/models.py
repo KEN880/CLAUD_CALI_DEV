@@ -85,7 +85,7 @@ class Order(Base):
     protocol_count = Column(Integer, nullable=False, default=1)
 
     # Statuses
-    status = Column(String, nullable=False, default="1 очередь")
+    status = Column(String, nullable=False, default="Новый")
     layout_status = Column(String, nullable=False, default="Нет")
     sample_status = Column(String, nullable=False, default="Нет")
     cert_body = Column(String, nullable=True)
