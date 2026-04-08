@@ -50,6 +50,13 @@ const NEXT_STATUS: Record<string, Order['status'] | null> = {
   'Выпущен': null,
 };
 
+const PREV_STATUS: Record<string, Order['status'] | null> = {
+  'Новый': null,
+  'Готов': 'Новый',
+  'В работе': 'Готов',
+  'Выпущен': 'В работе',
+};
+
 /* ── Helpers ──────────────────────────────────────────── */
 
 function formatPrice(n: number): string {
@@ -94,6 +101,7 @@ function OrderCard({
 }) {
   const [expanded, setExpanded] = useState(false);
   const next = NEXT_STATUS[order.status];
+  const prev = PREV_STATUS[order.status];
   const trademark = order.products?.[0]?.trademark;
 
   return (
@@ -138,17 +146,41 @@ function OrderCard({
             {order.doc_type}
           </span>
 
-          {/* Move arrow */}
-          {next && (
+          {/* Move arrows */}
+          {prev && (
             <button
-              title={`Перевести в "${COLUMNS.find((c) => c.statusValue === next)?.label}"`}
+              title={`← ${COLUMNS.find((c) => c.statusValue === prev)?.label}`}
               className="w-6 h-6 flex items-center justify-center rounded-lg text-xs font-bold transition-colors"
               style={{
                 backgroundColor: 'var(--color-angora)',
                 color: 'var(--color-coffee-700)',
               }}
               onMouseEnter={(e) => {
-                (e.currentTarget.style.backgroundColor) = 'var(--color-rose-400)';
+                e.currentTarget.style.backgroundColor = 'var(--color-marina-500)';
+                e.currentTarget.style.color = '#fff';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'var(--color-angora)';
+                e.currentTarget.style.color = 'var(--color-coffee-700)';
+              }}
+              onClick={(e) => {
+                e.stopPropagation();
+                onMove(order.id, prev);
+              }}
+            >
+              &larr;
+            </button>
+          )}
+          {next && (
+            <button
+              title={`→ ${COLUMNS.find((c) => c.statusValue === next)?.label}`}
+              className="w-6 h-6 flex items-center justify-center rounded-lg text-xs font-bold transition-colors"
+              style={{
+                backgroundColor: 'var(--color-angora)',
+                color: 'var(--color-coffee-700)',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = 'var(--color-rose-400)';
                 e.currentTarget.style.color = '#fff';
               }}
               onMouseLeave={(e) => {

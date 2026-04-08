@@ -6,16 +6,51 @@ import NewOrderPage from './pages/NewOrderPage'
 import ClientsPage from './pages/ClientsPage'
 
 function useTheme() {
-  const [dark, setDark] = useState(() => {
+  const [manual, setManual] = useState<boolean | null>(() => {
     const saved = localStorage.getItem('cali-theme')
-    if (saved) return saved === 'dark'
-    return window.matchMedia('(prefers-color-scheme: dark)').matches
+    if (saved === 'dark') return true
+    if (saved === 'light') return false
+    return null // no manual override — follow system
   })
+  const [systemDark, setSystemDark] = useState(() =>
+    window.matchMedia('(prefers-color-scheme: dark)').matches
+  )
+
+  // Listen for system theme changes (iPhone dark mode toggle etc.)
+  useEffect(() => {
+    const mq = window.matchMedia('(prefers-color-scheme: dark)')
+    const handler = (e: MediaQueryListEvent) => setSystemDark(e.matches)
+    mq.addEventListener('change', handler)
+    return () => mq.removeEventListener('change', handler)
+  }, [])
+
+  const dark = manual ?? systemDark
+
   useEffect(() => {
     document.documentElement.classList.toggle('dark', dark)
-    localStorage.setItem('cali-theme', dark ? 'dark' : 'light')
   }, [dark])
-  return [dark, () => setDark(!dark)] as const
+
+  const toggle = () => {
+    // If currently in manual mode, cycle: manual dark → manual light → auto
+    if (manual !== null) {
+      const next = !dark
+      if (next === systemDark) {
+        // Going back to what system wants = reset to auto
+        setManual(null)
+        localStorage.removeItem('cali-theme')
+      } else {
+        setManual(next)
+        localStorage.setItem('cali-theme', next ? 'dark' : 'light')
+      }
+    } else {
+      // Auto mode → switch to opposite of system
+      const next = !systemDark
+      setManual(next)
+      localStorage.setItem('cali-theme', next ? 'dark' : 'light')
+    }
+  }
+
+  return [dark, toggle] as const
 }
 
 export default function App() {
