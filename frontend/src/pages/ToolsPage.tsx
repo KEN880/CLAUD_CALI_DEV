@@ -41,26 +41,31 @@ function resolveTnvedMultiDemo(
   };
   const typeCode = productMap[productType] || '04';
 
-  // Determine main material (highest percent)
+  // Determine main material (highest percent) for TNVED classification
   const mainMat = materials.length > 0
     ? materials.reduce((a, b) => a.percent >= b.percent ? a : b).name
     : 'Хлопок';
 
-  // Material → last part
-  const materialMap: Record<string, string> = {
-    'Хлопок': '42 000 0',
-    'Полиэстер': '43 000 0',
-    'Шерсть': '31 000 0',
-    'Шёлк': '41 000 0',
-    'Вискоза': '44 000 0',
-    'Нейлон': '43 000 0',
-    'Акрил': '43 000 0',
-    'Лён': '42 000 0',
-    'Эластан': '49 000 0',
-    'Спандекс': '49 000 0',
-    'Бамбук': '42 000 0',
+  // Real TNVED material subcodes from ЕТТ ЕАЭС chapters 61/62:
+  // Structure: XX YY ZZZ D — YY=material group, ZZZ D=product subcode
+  // YY: 10=шерсть, 20=хлопок, 30=синтетика/химнити, 90=прочие
+  // For most products: ZZZ D = 000 0 (basic subcode)
+  const materialGroupMap: Record<string, string> = {
+    'Шерсть': '10',
+    'Хлопок': '20',
+    'Полиэстер': '30',
+    'Нейлон': '30',
+    'Акрил': '30',
+    'Вискоза': '30',
+    'Шёлк': '90',
+    'Лён': '90',
+    'Эластан': '90',
+    'Спандекс': '90',
+    'Бамбук': '90',
   };
-  const matCode = materialMap[mainMat] || '49 000 0';
+  const matGroup = materialGroupMap[mainMat] || '90';
+  // Default product subcode (most common)
+  const matCode = `${matGroup} 000 0`;
 
   // Layer auto-determination
   const outerTypes = ['Куртка', 'Пальто'];
@@ -74,10 +79,19 @@ function resolveTnvedMultiDemo(
     ? materials.map(m => `${m.name} ${m.percent}%`).join(', ')
     : mainMat;
 
-  // Product + Gender → 2-digit heading suffix (TNVED structure: base + this = 4-digit heading)
-  // Real TNVED: 6101/6201 = пальто/куртки муж, 6102/6202 = пальто/куртки жен
-  // 6103/6203 = костюмы/брюки муж, 6104/6204 = платья/юбки/брюки жен
-  // 6105/6205 = рубашки муж, 6106/6206 = блузки жен, 6110/6211 = джемперы, 6111 = детская
+  // Real TNVED heading structure from ЕТТ ЕАЭС (chapters 61, 62):
+  // 6101/6201 = пальто, куртки — мужские или для мальчиков
+  // 6102/6202 = пальто, куртки — женские или для девочек
+  // 6103/6203 = костюмы, пиджаки, брюки — мужские или для мальчиков
+  // 6104/6204 = костюмы, жакеты, платья, юбки, брюки — женские или для девочек
+  // 6105/6205 = рубашки — мужские или для мальчиков
+  // 6106/6206 = блузки, блузы — женские или для девочек
+  // 6107/6207 = кальсоны, трусы, пижамы — мужские
+  // 6108/6208 = комбинации, трусы, пижамы — женские
+  // 6109     = майки, фуфайки (унисекс)
+  // 6110     = свитеры, пуловеры, кардиганы, жилеты (унисекс)
+  // 6111/6209 = детская одежда (для детей ростом до 86 см)
+  // 6114/6211 = прочая одежда
   const productGenderMap: Record<string, Record<string, string>> = {
     'Куртка':     { 'Мужская': '01', 'Женская': '02', 'Для мальчиков': '01', 'Для девочек': '02' },
     'Пальто':     { 'Мужская': '01', 'Женская': '02', 'Для мальчиков': '01', 'Для девочек': '02' },
