@@ -795,29 +795,6 @@ function MaketGenerator() {
       <SectionHeader title="Документ" />
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
         <SelectField label="ТР ТС" value={form.trTs} onChange={(v) => update('trTs', v)} options={['017/2011', '007/2011']} />
-        <TextField label="Протокол испытаний №" value={form.protocolNumber} onChange={(v) => update('protocolNumber', v)} />
-        <SelectField
-          label={form.docType === 'CC' ? 'Схема сертификации' : 'Схема декларирования'}
-          value={form.declarationScheme}
-          onChange={(v) => update('declarationScheme', v)}
-          options={form.docType === 'CC' ? ['3С', '4С', '5С'] : ['3Д', '4Д', '6Д']}
-        />
-        <div>
-          <label className="block text-xs font-medium mb-1.5" style={{ color: 'var(--color-coffee-600)' }}>
-            Срок действия до
-          </label>
-          <input
-            type="date"
-            value={form.validUntil}
-            onChange={(e) => update('validUntil', e.target.value)}
-            className="w-full px-3 py-2.5 rounded-xl text-sm outline-none transition-all"
-            style={{
-              backgroundColor: 'var(--color-angora)',
-              border: '1px solid var(--color-angora-dark)',
-              color: 'var(--color-coffee-800)',
-            }}
-          />
-        </div>
       </div>
 
       {/* Error message */}

@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException, UploadFile, File
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from io import BytesIO
+from urllib.parse import quote
 import re
 
 from services.maket_generator import generate_maket_ds, generate_maket_cc
@@ -49,10 +50,11 @@ def generate_ds(data: MaketRequest):
         raise HTTPException(500, f"Ошибка генерации документа: {str(e)}")
 
     filename = f"maket_ds_{data.applicantName or 'document'}.docx"
+    encoded = quote(filename)
     return StreamingResponse(
         BytesIO(content),
         media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        headers={"Content-Disposition": f"attachment; filename*=UTF-8''{filename}"},
+        headers={"Content-Disposition": f"attachment; filename*=UTF-8''{encoded}"},
     )
 
 
@@ -65,10 +67,11 @@ def generate_cc(data: MaketRequest):
         raise HTTPException(500, f"Ошибка генерации документа: {str(e)}")
 
     filename = f"maket_cc_{data.applicantName or 'document'}.docx"
+    encoded = quote(filename)
     return StreamingResponse(
         BytesIO(content),
         media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        headers={"Content-Disposition": f"attachment; filename*=UTF-8''{filename}"},
+        headers={"Content-Disposition": f"attachment; filename*=UTF-8''{encoded}"},
     )
 
 
