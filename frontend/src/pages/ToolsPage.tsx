@@ -1,13 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
-import { isDemo, tnvedApi } from '../api/client';
+import { isDemo } from '../api/client';
 
 /* ── TNVED Demo Resolver ─────────────────────────────── */
-
-interface TnvedResult {
-  code: string;
-  layer: number;
-  trTs: string;
-}
 
 const PRODUCT_TYPES = [
   'Платье', 'Юбка', 'Брюки', 'Пиджак', 'Куртка', 'Пальто',
@@ -16,24 +10,27 @@ const PRODUCT_TYPES = [
 ] as const;
 
 const MATERIALS = [
-  'Хлопок', 'Полиэстер', 'Шерсть', 'Шёлк', 'Синтетика', 'Смешанный',
+  'Хлопок', 'Полиэстер', 'Шерсть', 'Шёлк', 'Вискоза', 'Нейлон',
+  'Акрил', 'Лён', 'Эластан', 'Спандекс', 'Бамбук',
 ] as const;
 
+type TargetGroup = 'Взрослая' | 'Детская';
+
+interface TnvedMultiResult {
+  results: { gender: string; code: string; layer: number; trTs: string; docType: string }[];
+  materials: string;
+}
+
 // Demo mapping for TNVED codes (approximate)
-function resolveTnvedDemo(
+function resolveTnvedMultiDemo(
   weaving: string,
   productType: string,
-  gender: string,
-  material: string,
-): TnvedResult {
+  targetGroup: TargetGroup,
+  genders: string[],
+  materials: { name: string; percent: number }[],
+): TnvedMultiResult {
   // Base: трикотаж → 61xx, швейка → 62xx
   const base = weaving === 'Трикотаж' ? '61' : '62';
-
-  // Gender digit pair
-  let genderCode: string;
-  if (gender === 'Мужской') genderCode = '03';
-  else if (gender === 'Женский') genderCode = '04';
-  else genderCode = '04'; // child uses same structure
 
   // Product type → second pair
   const productMap: Record<string, string> = {
@@ -44,16 +41,26 @@ function resolveTnvedDemo(
   };
   const typeCode = productMap[productType] || '04';
 
+  // Determine main material (highest percent)
+  const mainMat = materials.length > 0
+    ? materials.reduce((a, b) => a.percent >= b.percent ? a : b).name
+    : 'Хлопок';
+
   // Material → last part
   const materialMap: Record<string, string> = {
     'Хлопок': '42 000 0',
     'Полиэстер': '43 000 0',
     'Шерсть': '31 000 0',
     'Шёлк': '41 000 0',
-    'Синтетика': '43 000 0',
-    'Смешанный': '49 000 0',
+    'Вискоза': '44 000 0',
+    'Нейлон': '43 000 0',
+    'Акрил': '43 000 0',
+    'Лён': '42 000 0',
+    'Эластан': '49 000 0',
+    'Спандекс': '49 000 0',
+    'Бамбук': '42 000 0',
   };
-  const matCode = materialMap[material] || '49 000 0';
+  const matCode = materialMap[mainMat] || '49 000 0';
 
   // Layer auto-determination
   const outerTypes = ['Куртка', 'Пальто'];
@@ -62,11 +69,54 @@ function resolveTnvedDemo(
   if (outerTypes.includes(productType)) layer = 3;
   if (innerTypes.includes(productType)) layer = 1;
 
-  // TR TS based on gender
-  const trTs = gender === 'Детский' ? '007/2011' : '017/2011';
+  // Format materials string
+  const matStr = materials.length > 0
+    ? materials.map(m => `${m.name} ${m.percent}%`).join(', ')
+    : mainMat;
 
-  const code = `${base}${typeCode} ${genderCode} ${matCode}`;
-  return { code, layer, trTs };
+  // Product + Gender → 2-digit heading suffix (TNVED structure: base + this = 4-digit heading)
+  // Real TNVED: 6101/6201 = пальто/куртки муж, 6102/6202 = пальто/куртки жен
+  // 6103/6203 = костюмы/брюки муж, 6104/6204 = платья/юбки/брюки жен
+  // 6105/6205 = рубашки муж, 6106/6206 = блузки жен, 6110/6211 = джемперы, 6111 = детская
+  const productGenderMap: Record<string, Record<string, string>> = {
+    'Куртка':     { 'Мужская': '01', 'Женская': '02', 'Для мальчиков': '01', 'Для девочек': '02' },
+    'Пальто':     { 'Мужская': '01', 'Женская': '02', 'Для мальчиков': '01', 'Для девочек': '02' },
+    'Костюм':     { 'Мужская': '03', 'Женская': '04', 'Для мальчиков': '03', 'Для девочек': '04' },
+    'Пиджак':     { 'Мужская': '03', 'Женская': '04', 'Для мальчиков': '03', 'Для девочек': '04' },
+    'Брюки':      { 'Мужская': '03', 'Женская': '04', 'Для мальчиков': '03', 'Для девочек': '04' },
+    'Платье':     { 'Мужская': '04', 'Женская': '04', 'Для мальчиков': '04', 'Для девочек': '04' },
+    'Юбка':       { 'Мужская': '04', 'Женская': '04', 'Для мальчиков': '04', 'Для девочек': '04' },
+    'Рубашка':    { 'Мужская': '05', 'Женская': '06', 'Для мальчиков': '05', 'Для девочек': '06' },
+    'Блузка':     { 'Мужская': '06', 'Женская': '06', 'Для мальчиков': '06', 'Для девочек': '06' },
+    'Джемпер':    { 'Мужская': '10', 'Женская': '10', 'Для мальчиков': '10', 'Для девочек': '10' },
+    'Кардиган':   { 'Мужская': '10', 'Женская': '10', 'Для мальчиков': '10', 'Для девочек': '10' },
+    'Жилет':      { 'Мужская': '10', 'Женская': '10', 'Для мальчиков': '10', 'Для девочек': '10' },
+    'Боди':       { 'Мужская': '09', 'Женская': '08', 'Для мальчиков': '11', 'Для девочек': '11' },
+    'Комбинезон': { 'Мужская': '14', 'Женская': '14', 'Для мальчиков': '11', 'Для девочек': '11' },
+  };
+
+  const isChild = targetGroup === 'Детская';
+  const trTs = isChild ? '007/2011' : '017/2011';
+
+  // Doc type auto-determination per Справочник:
+  // СС: детская 1-2 слой, взрослая 1 слой
+  // ДС: взрослая 2-3 слой, детская 3 слой
+  let docType: string;
+  if (isChild) {
+    docType = layer <= 2 ? 'СС' : 'ДС';
+  } else {
+    docType = layer === 1 ? 'СС' : 'ДС';
+  }
+
+  const results = genders.map((g) => {
+    const pgMap = productGenderMap[productType];
+    const pgCode = pgMap?.[g] || '04';
+    // 10-digit code: XXXX XX XXX X (4+2+3+1)
+    const code = `${base}${pgCode} ${matCode}`;
+    return { gender: g, code, layer, trTs, docType };
+  });
+
+  return { results, materials: matStr };
 }
 
 /* ── Copy helper ─────────────────────────────────────── */
@@ -87,52 +137,78 @@ function useCopyState() {
 function TnvedCalculator() {
   const [weaving, setWeaving] = useState('Трикотаж');
   const [productType, setProductType] = useState('Платье');
-  const [gender, setGender] = useState('Женский');
-  const [material, setMaterial] = useState('Хлопок');
-  const [result, setResult] = useState<TnvedResult | null>(null);
+  const [targetGroup, setTargetGroup] = useState<TargetGroup>('Взрослая');
+  const [genders, setGenders] = useState<string[]>(['Женская']);
+  const [materials, setMaterials] = useState<{ name: string; percent: number }[]>([
+    { name: 'Хлопок', percent: 100 },
+  ]);
+  const [newMaterial, setNewMaterial] = useState('');
+  const [result, setResult] = useState<TnvedMultiResult | null>(null);
   const [loading, setLoading] = useState(false);
-  const { copied, copy } = useCopyState();
+  const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
+
+  const adultGenders = ['Женская', 'Мужская'];
+  const childGenders = ['Для девочек', 'Для мальчиков'];
+  const subOptions = targetGroup === 'Взрослая' ? adultGenders : childGenders;
+
+  const toggleGender = (g: string) => {
+    setGenders((prev) => {
+      if (prev.includes(g)) {
+        return prev.length > 1 ? prev.filter((x) => x !== g) : prev;
+      }
+      return [...prev, g];
+    });
+  };
+
+  // When switching target group, reset genders to first sub-option
+  const handleGroupChange = (g: TargetGroup) => {
+    setTargetGroup(g);
+    setGenders(g === 'Взрослая' ? ['Женская'] : ['Для девочек']);
+  };
+
+  // Materials management
+  const addMaterial = (name: string) => {
+    if (!name || materials.some((m) => m.name === name)) return;
+    setMaterials((prev) => {
+      const evenPercent = Math.floor(100 / (prev.length + 1));
+      const updated = prev.map((m) => ({ ...m, percent: evenPercent }));
+      const remainder = 100 - evenPercent * prev.length;
+      return [...updated, { name, percent: remainder }];
+    });
+    setNewMaterial('');
+  };
+
+  const removeMaterial = (name: string) => {
+    if (materials.length <= 1) return;
+    setMaterials((prev) => {
+      const filtered = prev.filter((m) => m.name !== name);
+      // Redistribute to 100%
+      const each = Math.floor(100 / filtered.length);
+      return filtered.map((m, i) => ({
+        ...m,
+        percent: i === filtered.length - 1 ? 100 - each * (filtered.length - 1) : each,
+      }));
+    });
+  };
+
+  const updatePercent = (name: string, percent: number) => {
+    setMaterials((prev) => prev.map((m) => m.name === name ? { ...m, percent } : m));
+  };
+
+  const copyCode = (text: string, idx: number) => {
+    navigator.clipboard.writeText(text).then(() => {
+      setCopiedIdx(idx);
+      setTimeout(() => setCopiedIdx(null), 1500);
+    });
+  };
 
   useEffect(() => {
-    let cancelled = false;
+    const r = resolveTnvedMultiDemo(weaving, productType, targetGroup, genders, materials);
+    setResult(r);
+    setLoading(false);
+  }, [weaving, productType, targetGroup, genders, materials]);
 
-    async function resolve() {
-      setLoading(true);
-      try {
-        if (isDemo) {
-          const r = resolveTnvedDemo(weaving, productType, gender, material);
-          if (!cancelled) setResult(r);
-        } else {
-          const res = await tnvedApi.resolve({
-            material_type: weaving === 'Трикотаж' ? 'трикотаж' : 'швейка',
-            product_type: productType,
-            gender: gender === 'Мужской' ? 'male' : gender === 'Женский' ? 'female' : 'child',
-            main_material: material,
-          });
-          if (!cancelled) {
-            // Determine layer and TR TS from response
-            const outerTypes = ['Куртка', 'Пальто'];
-            const innerTypes = ['Боди'];
-            let layer = 2;
-            if (outerTypes.includes(productType)) layer = 3;
-            if (innerTypes.includes(productType)) layer = 1;
-            const trTs = gender === 'Детский' ? '007/2011' : '017/2011';
-            setResult({ code: res.code, layer, trTs });
-          }
-        }
-      } catch {
-        if (!cancelled) {
-          const r = resolveTnvedDemo(weaving, productType, gender, material);
-          setResult(r);
-        }
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    }
-
-    resolve();
-    return () => { cancelled = true; };
-  }, [weaving, productType, gender, material]);
+  const availableMaterials = [...MATERIALS].filter((m) => !materials.some((x) => x.name === m));
 
   return (
     <div
@@ -162,59 +238,202 @@ function TnvedCalculator() {
         </div>
       </div>
 
-      {/* Form grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+      {/* Form */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
         <SelectField label="Вид плетения" value={weaving} onChange={setWeaving} options={['Трикотаж', 'Швейка']} />
         <SelectField label="Тип изделия" value={productType} onChange={setProductType} options={[...PRODUCT_TYPES]} />
-        <SelectField label="Пол" value={gender} onChange={setGender} options={['Мужской', 'Женский', 'Детский']} />
-        <SelectField label="Основной материал" value={material} onChange={setMaterial} options={[...MATERIALS]} />
       </div>
 
-      {/* Result */}
-      <div
-        className="rounded-xl p-5 text-center"
-        style={{
-          backgroundColor: 'var(--color-angora)',
-          border: '1px solid var(--color-angora-dark)',
-        }}
-      >
+      {/* Target group: Взрослая / Детская */}
+      <div className="mb-4">
+        <label className="block text-xs font-medium mb-2" style={{ color: 'var(--color-coffee-600)' }}>
+          Целевая группа
+        </label>
+        <div className="flex gap-2 mb-3">
+          {(['Взрослая', 'Детская'] as TargetGroup[]).map((g) => (
+            <button
+              key={g}
+              onClick={() => handleGroupChange(g)}
+              className="px-4 py-2 rounded-xl text-sm font-bold transition-all"
+              style={{
+                backgroundColor: targetGroup === g ? 'var(--color-marina-500)' : 'var(--color-angora)',
+                color: targetGroup === g ? '#fff' : 'var(--color-coffee-600)',
+              }}
+            >
+              {g}
+            </button>
+          ))}
+        </div>
+        {/* Gender sub-options (multi-select checkboxes) */}
+        <div className="flex gap-3 ml-1">
+          {subOptions.map((g) => (
+            <label key={g} className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={genders.includes(g)}
+                onChange={() => toggleGender(g)}
+                className="w-4 h-4 rounded"
+                style={{ accentColor: 'var(--color-rose-400)' }}
+              />
+              <span className="text-sm" style={{ color: 'var(--color-coffee-700)' }}>{g}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+
+      {/* Materials combo */}
+      <div className="mb-6">
+        <label className="block text-xs font-medium mb-2" style={{ color: 'var(--color-coffee-600)' }}>
+          Состав материалов
+        </label>
+        {/* Material chips */}
+        <div className="flex flex-wrap gap-2 mb-2">
+          {materials.map((m) => (
+            <div
+              key={m.name}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm"
+              style={{
+                backgroundColor: 'var(--color-angora)',
+                border: '1px solid var(--color-angora-dark)',
+                color: 'var(--color-coffee-800)',
+              }}
+            >
+              <span className="font-medium">{m.name}</span>
+              <input
+                type="number"
+                min={1}
+                max={100}
+                value={m.percent}
+                onChange={(e) => updatePercent(m.name, Math.max(1, Math.min(100, Number(e.target.value) || 1)))}
+                className="w-12 text-center text-xs px-1 py-0.5 rounded outline-none"
+                style={{
+                  backgroundColor: 'var(--color-surface)',
+                  border: '1px solid var(--color-angora-dark)',
+                  color: 'var(--color-coffee-800)',
+                }}
+              />
+              <span className="text-xs" style={{ color: 'var(--color-coffee-500)' }}>%</span>
+              {materials.length > 1 && (
+                <button
+                  onClick={() => removeMaterial(m.name)}
+                  className="ml-1 w-5 h-5 rounded-full flex items-center justify-center text-xs hover:scale-110 transition-all"
+                  style={{ backgroundColor: 'var(--color-lava-50)', color: 'var(--color-lava-500)' }}
+                >
+                  &times;
+                </button>
+              )}
+            </div>
+          ))}
+        </div>
+        {/* Add material */}
+        {availableMaterials.length > 0 && (
+          <div className="flex gap-2">
+            <select
+              value={newMaterial}
+              onChange={(e) => setNewMaterial(e.target.value)}
+              className="flex-1 px-3 py-2 rounded-xl text-sm outline-none cursor-pointer appearance-none"
+              style={{
+                backgroundColor: 'var(--color-angora)',
+                border: '1px solid var(--color-angora-dark)',
+                color: 'var(--color-coffee-800)',
+                backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%236e5040' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E")`,
+                backgroundRepeat: 'no-repeat',
+                backgroundPosition: 'right 12px center',
+                paddingRight: '36px',
+              }}
+            >
+              <option value="">+ Добавить материал</option>
+              {availableMaterials.map((m) => (
+                <option key={m} value={m}>{m}</option>
+              ))}
+            </select>
+            {newMaterial && (
+              <button
+                onClick={() => addMaterial(newMaterial)}
+                className="px-4 py-2 rounded-xl text-sm font-bold transition-all hover:scale-105"
+                style={{ backgroundColor: 'var(--color-marina-100)', color: 'var(--color-marina-600)' }}
+              >
+                +
+              </button>
+            )}
+          </div>
+        )}
+        {/* Total percent indicator */}
+        {materials.length > 1 && (
+          <div className="mt-2 text-xs" style={{
+            color: materials.reduce((s, m) => s + m.percent, 0) === 100
+              ? 'var(--color-sage-600)' : 'var(--color-lava-500)',
+          }}>
+            Итого: {materials.reduce((s, m) => s + m.percent, 0)}%
+            {materials.reduce((s, m) => s + m.percent, 0) !== 100 && ' (должно быть 100%)'}
+          </div>
+        )}
+      </div>
+
+      {/* Results — one per selected gender */}
+      <div className="space-y-3">
         {loading ? (
-          <div className="flex justify-center py-2">
+          <div className="flex justify-center py-4">
             <div
               className="w-6 h-6 border-2 rounded-full animate-spin"
               style={{ borderColor: 'var(--color-angora-dark)', borderTopColor: 'var(--color-marina-500)' }}
             />
           </div>
-        ) : result ? (
-          <>
-            <p className="text-xs font-medium mb-2" style={{ color: 'var(--color-coffee-500)' }}>
-              Код ТН ВЭД
-            </p>
-            <div className="flex items-center justify-center gap-3 mb-3">
+        ) : result?.results.map((r, i) => (
+          <div
+            key={r.gender}
+            className="rounded-xl p-4 text-center"
+            style={{
+              backgroundColor: 'var(--color-angora)',
+              border: '1px solid var(--color-angora-dark)',
+            }}
+          >
+            {result.results.length > 1 && (
+              <p className="text-xs font-medium mb-1" style={{ color: 'var(--color-coffee-500)' }}>
+                {r.gender}
+              </p>
+            )}
+            <div className="flex items-center justify-center gap-3 mb-2">
               <span
-                className="text-2xl sm:text-3xl font-bold font-mono tracking-wider"
+                className="text-xl sm:text-2xl font-bold font-mono tracking-wider"
                 style={{ color: 'var(--color-coffee-800)' }}
               >
-                {result.code}
+                {r.code}
               </span>
               <button
-                onClick={() => copy(result.code.replace(/\s/g, ''))}
+                onClick={() => copyCode(r.code.replace(/\s/g, ''), i)}
                 className="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all"
                 style={{
-                  backgroundColor: copied ? 'var(--color-sage-100)' : 'var(--color-marina-100)',
-                  color: copied ? 'var(--color-sage-600)' : 'var(--color-marina-600)',
+                  backgroundColor: copiedIdx === i ? 'var(--color-sage-100)' : 'var(--color-marina-100)',
+                  color: copiedIdx === i ? 'var(--color-sage-600)' : 'var(--color-marina-600)',
                 }}
               >
-                {copied ? 'Скопировано!' : 'Копировать'}
+                {copiedIdx === i ? 'Скопировано!' : 'Копировать'}
               </button>
             </div>
-            <div className="flex items-center justify-center gap-4 text-xs" style={{ color: 'var(--color-coffee-600)' }}>
-              <span>Слой: <strong>{result.layer}</strong></span>
+            <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs" style={{ color: 'var(--color-coffee-600)' }}>
+              <span>Слой: <strong>{r.layer}</strong></span>
               <span className="w-1 h-1 rounded-full" style={{ backgroundColor: 'var(--color-angora-dark)' }} />
-              <span>ТР ТС: <strong>{result.trTs}</strong></span>
+              <span>ТР ТС: <strong>{r.trTs}</strong></span>
+              <span className="w-1 h-1 rounded-full" style={{ backgroundColor: 'var(--color-angora-dark)' }} />
+              <span
+                className="px-2 py-0.5 rounded-md font-bold"
+                style={{
+                  backgroundColor: r.docType === 'СС' ? 'var(--color-marina-100)' : 'var(--color-lilac-100)',
+                  color: r.docType === 'СС' ? 'var(--color-marina-600)' : 'var(--color-lilac-600)',
+                }}
+              >
+                {r.docType}
+              </span>
             </div>
-          </>
-        ) : null}
+          </div>
+        ))}
+        {/* Show materials summary if multiple genders */}
+        {result && result.results.length > 1 && (
+          <div className="text-center text-xs pt-1" style={{ color: 'var(--color-coffee-500)' }}>
+            Состав: {result.materials}
+          </div>
+        )}
       </div>
     </div>
   );
@@ -245,7 +464,7 @@ interface MaketForm {
   productLayer: string;
   productGender: string;
   productMaterial: string;
-  productTrademarks: string;
+  productTrademarks: string[];
   productList: string;
   tnvedCodes: string;
   // Document
@@ -274,7 +493,7 @@ const initialMaketForm: MaketForm = {
   productLayer: '2',
   productGender: 'Женский',
   productMaterial: '',
-  productTrademarks: '',
+  productTrademarks: [],
   productList: '',
   tnvedCodes: '',
   trTs: '017/2011',
@@ -349,7 +568,12 @@ function MaketGenerator() {
         const next = { ...prev };
         for (const [key, val] of Object.entries(parsed)) {
           if (val && key in next) {
-            (next as any)[key] = val;
+            // Convert trademarks string from backend to array
+            if (key === 'productTrademarks' && typeof val === 'string') {
+              next.productTrademarks = (val as string).split(',').map((s: string) => s.trim()).filter(Boolean);
+            } else {
+              (next as any)[key] = val;
+            }
           }
         }
         return next;
@@ -377,10 +601,12 @@ function MaketGenerator() {
     const prefix = form.docType === 'CC' ? 'maket_cc' : 'maket_ds';
 
     try {
+      // Serialize trademarks array to comma-separated string for backend
+      const payload = { ...form, productTrademarks: form.productTrademarks.join(', ') };
       const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        body: JSON.stringify(payload),
       });
 
       if (!res.ok) {
@@ -542,7 +768,7 @@ function MaketGenerator() {
         <SelectField label="Слой" value={form.productLayer} onChange={(v) => update('productLayer', v)} options={['1', '2', '3']} />
         <SelectField label="Пол" value={form.productGender} onChange={(v) => update('productGender', v)} options={['Мужской', 'Женский', 'Детский']} />
         <TextField label="Основной материал" value={form.productMaterial} onChange={(v) => update('productMaterial', v)} placeholder="напр. Хлопок" />
-        <TextField label="Торговая марка" value={form.productTrademarks} onChange={(v) => update('productTrademarks', v)} placeholder="через запятую" />
+        <TagInput label="Торговые марки" tags={form.productTrademarks} onChange={(v) => update('productTrademarks', v)} placeholder="Введите и нажмите Enter" />
         <div className="sm:col-span-2">
           <TextAreaField label="Перечень изделий" value={form.productList} onChange={(v) => update('productList', v)} placeholder="Список изделий для приложения" rows={3} />
         </div>
@@ -755,6 +981,70 @@ function RadioGroup({
             <span className="text-sm" style={{ color: 'var(--color-coffee-700)' }}>{o}</span>
           </label>
         ))}
+      </div>
+    </div>
+  );
+}
+
+function TagInput({
+  label,
+  tags,
+  onChange,
+  placeholder,
+}: {
+  label: string;
+  tags: string[];
+  onChange: (tags: string[]) => void;
+  placeholder?: string;
+}) {
+  const [input, setInput] = useState('');
+
+  const addTag = () => {
+    const trimmed = input.trim();
+    if (trimmed && !tags.includes(trimmed)) {
+      onChange([...tags, trimmed]);
+    }
+    setInput('');
+  };
+
+  return (
+    <div>
+      <label className="block text-xs font-medium mb-1.5" style={{ color: 'var(--color-coffee-600)' }}>
+        {label}
+      </label>
+      <div
+        className="flex flex-wrap gap-1.5 px-3 py-2 rounded-xl min-h-[42px] items-center"
+        style={{
+          backgroundColor: 'var(--color-angora)',
+          border: '1px solid var(--color-angora-dark)',
+        }}
+      >
+        {tags.map((tag) => (
+          <span
+            key={tag}
+            className="flex items-center gap-1 px-2 py-0.5 rounded-lg text-xs font-medium"
+            style={{ backgroundColor: 'var(--color-marina-100)', color: 'var(--color-marina-600)' }}
+          >
+            {tag}
+            <button
+              onClick={() => onChange(tags.filter((t) => t !== tag))}
+              className="hover:opacity-70 text-sm leading-none"
+            >
+              &times;
+            </button>
+          </span>
+        ))}
+        <input
+          type="text"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') { e.preventDefault(); addTag(); }
+          }}
+          placeholder={tags.length === 0 ? placeholder : ''}
+          className="flex-1 min-w-[100px] text-sm outline-none bg-transparent placeholder:opacity-40"
+          style={{ color: 'var(--color-coffee-800)' }}
+        />
       </div>
     </div>
   );
