@@ -100,6 +100,13 @@ def _layer_word(layer: str) -> str:
     return {"1": "первого", "2": "второго", "3": "третьего"}.get(str(layer), f"{layer}")
 
 
+def _kr_address(address: str) -> str:
+    """Prepend 'Кыргызская Республика,' only if not already in address."""
+    if "кыргыз" in address.lower():
+        return address
+    return f"Кыргызская Республика, {address}"
+
+
 def _format_trademarks(trademarks: str) -> str:
     parts = [t.strip() for t in trademarks.split(",") if t.strip()]
     if not parts:
@@ -215,7 +222,7 @@ def generate_maket_ds(data: dict) -> bytes:
     # Место нахождения
     p = _add_p(doc, space_after=2)
     _add_run(p, "Место нахождения:", font_size=12)
-    _add_run(p, f" Кыргызская Республика, {app_address}", font_size=12)
+    _add_run(p, f" {_kr_address(app_address)}", font_size=12)
 
     # Телефон, email
     p = _add_p(doc, space_after=2)
@@ -261,7 +268,7 @@ def generate_maket_ds(data: dict) -> bytes:
     # Адрес
     p = _add_p(doc, space_after=4)
     _add_run(p, "Адрес места осуществления деятельности:", font_size=12)
-    _add_run(p, f" Кыргызская Республика, {mfr_prod_address}", font_size=12)
+    _add_run(p, f" {_kr_address(mfr_prod_address)}", font_size=12)
 
     # Соответствует
     p = _add_p(doc, space_after=4)
@@ -321,8 +328,10 @@ def generate_maket_ds(data: dict) -> bytes:
     product_lines = [l.strip() for l in data.get("productList", "").strip().split("\n") if l.strip()]
     row_count = max(len(tnved_lines), len(product_lines), 3)
 
-    # Product description header row (above numbered rows)
+    # Product description header row (above numbered rows) — includes trademarks like real template
     product_header = f"Изделия {weaving_adj} {layer_word} слоя {gender_adj} {material_text}".strip()
+    if tm_formatted:
+        product_header += f", торговой марки {tm_formatted}"
 
     # Table with 4 columns: №, Код ТН ВЭД ТС, Наименование, Количество
     total_rows = 1 + 1 + row_count  # header + product description + data
@@ -431,7 +440,7 @@ def generate_maket_cc(data: dict) -> bytes:
     # ЗАЯВИТЕЛЬ — no OKPO in CC
     p = _add_p(doc, space_after=6)
     _add_run(p, f"ЗАЯВИТЕЛЬ  {app_prefix} {app_name}, ИНН {app_inn}; "
-             f"Место нахождения: Кыргызская Республика, {app_address} "
+             f"Место нахождения: {_kr_address(app_address)} "
              f"Место осуществления деятельности: "
              f"телефон: {app_phone} электронная почта: {app_email}", font_size=11)
 
