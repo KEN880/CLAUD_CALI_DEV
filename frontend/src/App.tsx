@@ -4,6 +4,7 @@ import { isDemo } from './api/client'
 import KanbanPage from './pages/KanbanPage'
 import NewOrderPage from './pages/NewOrderPage'
 import ClientsPage from './pages/ClientsPage'
+import ToolsPage from './pages/ToolsPage'
 
 function useTheme() {
   const [manual, setManual] = useState<boolean | null>(() => {
@@ -78,6 +79,10 @@ export default function App() {
                 className={({ isActive }) => `px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${isActive ? 'bg-[var(--color-rose-50)] text-[var(--color-rose-600)] shadow-sm' : 'text-[var(--color-coffee-500)] hover:text-[var(--color-coffee-700)] hover:bg-[var(--color-angora)]'}`}>
                 Клиенты
               </NavLink>
+              <NavLink to="/tools"
+                className={({ isActive }) => `px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${isActive ? 'bg-[var(--color-rose-50)] text-[var(--color-rose-600)] shadow-sm' : 'text-[var(--color-coffee-500)] hover:text-[var(--color-coffee-700)] hover:bg-[var(--color-angora)]'}`}>
+                Инструменты
+              </NavLink>
               <NavLink to="/new"
                 className="px-4 py-2 rounded-lg text-sm font-semibold bg-gradient-to-r from-[var(--color-rose-400)] to-[var(--color-rose-500)] text-white hover:shadow-lg hover:shadow-[var(--color-rose-200)] transition-all duration-200">
                 + Заказ
@@ -118,6 +123,10 @@ export default function App() {
                 className={({ isActive }) => `block px-4 py-3 rounded-xl text-sm font-medium transition-all ${isActive ? 'bg-[var(--color-rose-50)] text-[var(--color-rose-600)]' : 'text-[var(--color-coffee-600)] hover:bg-[var(--color-angora)]'}`}>
                 Клиенты
               </NavLink>
+              <NavLink to="/tools" onClick={() => setMenuOpen(false)}
+                className={({ isActive }) => `block px-4 py-3 rounded-xl text-sm font-medium transition-all ${isActive ? 'bg-[var(--color-rose-50)] text-[var(--color-rose-600)]' : 'text-[var(--color-coffee-600)] hover:bg-[var(--color-angora)]'}`}>
+                Инструменты
+              </NavLink>
               <NavLink to="/new" onClick={() => setMenuOpen(false)}
                 className="block px-4 py-3 rounded-xl text-sm font-semibold text-center bg-gradient-to-r from-[var(--color-rose-400)] to-[var(--color-rose-500)] text-white">
                 + Новый заказ
@@ -138,6 +147,7 @@ export default function App() {
           <Route path="/" element={<KanbanPage />} />
           <Route path="/new" element={<NewOrderPage />} />
           <Route path="/clients" element={<ClientsPage />} />
+          <Route path="/tools" element={<ToolsPage />} />
         </Routes>
       </main>
     </div>

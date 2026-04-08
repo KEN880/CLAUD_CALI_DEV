@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from database import init_db
-from routers import clients, calculator, products, orders, tnved, manufacturers
+from routers import clients, calculator, products, orders, tnved, manufacturers, maket
 
 app = FastAPI(title="CALI — Certification Automation", version="2.0.0")
 
@@ -19,6 +19,7 @@ app.include_router(calculator.router)
 app.include_router(products.router)
 app.include_router(orders.router)
 app.include_router(tnved.router)
+app.include_router(maket.router)
 
 
 @app.on_event("startup")

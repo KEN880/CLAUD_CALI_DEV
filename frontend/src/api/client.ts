@@ -381,7 +381,7 @@ export const ordersApi = {
       if (idx >= 0) Object.assign(demoOrders[idx], data);
       return Promise.resolve(demoOrders[idx]);
     }
-    return request<Order>(`/orders/${id}`, { method: 'PUT', body: JSON.stringify(data) });
+    return request<Order>(`/orders/${id}`, { method: 'PATCH', body: JSON.stringify(data) });
   },
 
   downloadUrl: (id: number, fmt: 'pdf' | 'docx'): string =>
